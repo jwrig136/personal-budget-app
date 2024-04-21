@@ -3,25 +3,32 @@ import {useState, useEffect, useContext} from 'react'
 import './DashboardPage.css'
 import Menu from '../Menu/Menu';
 import {db} from '../firebase';
+import { where } from 'firebase/firestore';
 import { AuthContext } from '../Auth';
 import { Navigate } from 'react-router-dom';
 import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDoc} from 'firebase/firestore'
 
 function DashboardPage() {
+  const { user } = useContext(AuthContext);
 
   const [title, setTitle] = useState('')
   const [value, setValue] = useState()
 
   const [expenses, setExpenses] = useState([]);
  
+  
   useEffect(() => {
-    const q = query(collection(db, 'expenses'), orderBy('created', 'desc'))
+    if(user){
+    
+    
+    const q = query(collection(db, 'expenses'), where('userId', '==', user.uid))
     onSnapshot(q, (querySnapshot) => {
       setExpenses(querySnapshot.docs.map(doc => ({
         id: doc.id,
         data: doc.data()
       })))
     })
+  }
   },[])
 
   /* function to add new task to firestore */
@@ -31,7 +38,8 @@ function DashboardPage() {
       await addDoc(collection(db, 'expenses'), {
         title: title,
         value: parseInt(value),
-        created: Timestamp.now()
+        created: Timestamp.now(),
+        userId: user.uid
       })
     } catch (err) {
       alert(err)
@@ -46,14 +54,13 @@ function DashboardPage() {
     try{
       await updateDoc(taskDocRef, {
         title: title,
-        value: value
+        value: value,
+        userId: user.uid
       })
     } catch (err) {
       alert(err)
     }    
   }
-
-  const { user } = useContext(AuthContext);
 
   if (!user) {
     return <Navigate to="/login" />;
@@ -80,10 +87,12 @@ function DashboardPage() {
       <div className="todo-content">
       
       <table>
+        <tbody>
           <tr>
               <th>Expense</th>
               <th>Amount</th>
           </tr>
+          
           {expenses.map((expense) => (
             <tr id={expense.id}>
               <td>{expense.data.title}</td>
@@ -91,6 +100,7 @@ function DashboardPage() {
               <td><button onClick={handleUpdate}>edit</button></td>
               </tr>
             ))}
+            </tbody>
       
   </table>
         
