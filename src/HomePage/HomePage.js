@@ -1,108 +1,123 @@
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useContext} from 'react';
 import { Chart } from 'chart.js/auto';
+import { AuthContext } from '../Auth';
+import { Navigate } from 'react-router-dom';
 import * as d3 from "d3";
 import axios from 'axios';
+import Menu from '../Menu/Menu';
 
 function HomePage() {
-  var dataSource = {
-    datasets: [
-      {
-        data: [],
-        backgroundColor: [
-          "#ffcd56",
-          "#ff6384",
-          "#36a2eb",
-          "#fd6b19",
-          "#8a2be2",
-          "#ffc0cb",
-          "#ac054d",
-          "#33cc33",
-          "#ff0000"
-        ],
-      },
-    ],
-    labels: [],
-  };
+  const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    axios.get("http://localhost:3001/budget").then(function (res) {
-      for (var i = 0; i < res.data.myBudget.length; i++) {
-        dataSource.datasets[0].data[i] = res.data.myBudget[i].budget;
-        dataSource.labels[i] = res.data.myBudget[i].title;
-      }
-      createChart();
-      d3jsChart(res.data);
-
-    })
-  });
-
-
-  function createChart() {
-    var ctx = document.getElementById("myChart").getContext("2d");
-    if(window.myDoughnutChart){
-      window.myDoughnutChart.destroy();
-    }
-    window.myDoughnutChart = new Chart(ctx, {
-      type: "doughnut",
-      data: dataSource,
-    });
+  if (!user) {
+    return <Navigate to="/login" />;
   }
-
-  function d3jsChart(data){
-  var svg = d3.select("svg"),
-        width = 400,
-        height = 400,
-        radius = Math.min(width, height) / 2,
-        g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-      var color = d3.scaleOrdinal([
-              "#ffcd56",
-              "#ff6384",
-              "#36a2eb",
-              "#fd6b19",
-              "#8a2be2",
-              "#ffc0cb",
-              "#ac054d",
-              "#33cc33",
-              "#ff0000"
-            ]);
-
-      var pie = d3.pie()
-        .sort(null)
-        .value(function(d) { return d.budget; });
-
-      var path = d3.arc()
-        .outerRadius(radius)
-        .innerRadius(0);
-
-      var inside = d3.arc()
-        .outerRadius(radius - 40)
-        .innerRadius(radius - 40);
-
-        var arc = g.selectAll(".arc")
-          .data(pie(data.myBudget))
-          .enter().append("g")
-          .attr("class", "arc");
-
-        arc.append("path")
-          .attr("d", path)
-          .attr("fill", function(d) {
-            return color(d.data.title);
-          });
-
-        arc.append("text")
-          .attr("transform", function(d) {
-            return "translate(" + inside.centroid(d) + ")";
-          })
-          .attr("dy", "0.35em")
-          .text(function(d) {
-            return d.data.title;
-          });
-        }
+  else {
+    var dataSource = {
+      datasets: [
+        {
+          data: [],
+          backgroundColor: [
+            "#ffcd56",
+            "#ff6384",
+            "#36a2eb",
+            "#fd6b19",
+            "#8a2be2",
+            "#ffc0cb",
+            "#ac054d",
+            "#33cc33",
+            "#ff0000"
+          ],
+        },
+      ],
+      labels: [],
+    };
   
+    
+      axios.get("http://localhost:3001/budget").then(function (res) {
+        for (var i = 0; i < res.data.myBudget.length; i++) {
+          dataSource.datasets[0].data[i] = res.data.myBudget[i].budget;
+          dataSource.labels[i] = res.data.myBudget[i].title;
+        }
+        createChart();
+        d3jsChart(res.data);
+  
+      })
+    
+  
+  
+    function createChart() {
+      var ctx = document.getElementById("myChart").getContext("2d");
+      if(window.myDoughnutChart){
+        window.myDoughnutChart.destroy();
+      }
+      window.myDoughnutChart = new Chart(ctx, {
+        type: "doughnut",
+        data: dataSource,
+      });
+    }
+  
+    function d3jsChart(data){
+    var svg = d3.select("svg"),
+          width = 400,
+          height = 400,
+          radius = Math.min(width, height) / 2,
+          g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+  
+        var color = d3.scaleOrdinal([
+                "#ffcd56",
+                "#ff6384",
+                "#36a2eb",
+                "#fd6b19",
+                "#8a2be2",
+                "#ffc0cb",
+                "#ac054d",
+                "#33cc33",
+                "#ff0000"
+              ]);
+  
+        var pie = d3.pie()
+          .sort(null)
+          .value(function(d) { return d.budget; });
+  
+        var path = d3.arc()
+          .outerRadius(radius)
+          .innerRadius(0);
+  
+        var inside = d3.arc()
+          .outerRadius(radius - 40)
+          .innerRadius(radius - 40);
+  
+          var arc = g.selectAll(".arc")
+            .data(pie(data.myBudget))
+            .enter().append("g")
+            .attr("class", "arc");
+  
+          arc.append("path")
+            .attr("d", path)
+            .attr("fill", function(d) {
+              return color(d.data.title);
+            });
+  
+          arc.append("text")
+            .attr("transform", function(d) {
+              return "translate(" + inside.centroid(d) + ")";
+            })
+            .attr("dy", "0.35em")
+            .text(function(d) {
+              return d.data.title;
+            });
+          }
+
+  }
+  
+      
+
   return (
+    
     <main className="center" id="main">
+      <Menu></Menu>
   <div className="page-area">
     <section>
       <h3>Welcome to Personal Budget</h3>

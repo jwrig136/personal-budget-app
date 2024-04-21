@@ -1,15 +1,28 @@
 import React from 'react';
-import { 
-  Link
-  } from 'react-router-dom';
-  
+import { Link} from 'react-router-dom';
+import {  signOut } from "firebase/auth";
+  import {auth} from '../firebase';
+  import { useNavigate } from 'react-router-dom';
+
 function Menu() {
+  const navigate = useNavigate();
+ 
+    const handleLogout = () => {     
+      window.localStorage.setItem("isLoggedIn", false);          
+        signOut(auth).then(() => {
+        // Sign-out successful.
+            navigate("/login");
+        }).catch((error) => {
+        alert(error);
+        });
+    }
+   
   return (
     <nav>
       <ul>
         <li><Link to="/">Home</Link></li>
-        <li><Link to="/about">About</Link></li>
-        <li><Link to="/login">Login</Link></li>
+        <li><Link to="/dashboard">Dashboard</Link></li>
+        <li><Link onClick={handleLogout}>Logout</Link></li>
       </ul>
     </nav>
   );
