@@ -1,8 +1,10 @@
 
 import {useState, useEffect, useContext} from 'react'
 import './DashboardPage.css'
+import Modal from "./Modal"
 import Menu from '../Menu/Menu';
 import {db} from '../firebase';
+import Expense from './Expense';
 import { where } from 'firebase/firestore';
 import { AuthContext } from '../Auth';
 import { Navigate } from 'react-router-dom';
@@ -11,7 +13,10 @@ import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDo
 function DashboardPage() {
   const { user } = useContext(AuthContext);
 
+  const [openAddModal, setOpenAddModal] = useState(false)
+
   const [title, setTitle] = useState('')
+  //const [id, setId] = useState('')
   const [value, setValue] = useState()
 
   const [expenses, setExpenses] = useState([]);
@@ -19,8 +24,6 @@ function DashboardPage() {
   
   useEffect(() => {
     if(user){
-    
-    
     const q = query(collection(db, 'expenses'), where('userId', '==', user.uid))
     onSnapshot(q, (querySnapshot) => {
       setExpenses(querySnapshot.docs.map(doc => ({
@@ -39,27 +42,14 @@ function DashboardPage() {
         title: title,
         value: parseInt(value),
         created: Timestamp.now(),
-        userId: user.uid
+        userId: user.uid, 
+
       })
     } catch (err) {
       alert(err)
     }
     setTitle("");
     setValue("");
-  }
-
-  const handleUpdate = async (e) => {
-    e.preventDefault()
-    const taskDocRef = doc(db, 'expenses', expenses.id)
-    try{
-      await updateDoc(taskDocRef, {
-        title: title,
-        value: value,
-        userId: user.uid
-      })
-    } catch (err) {
-      alert(err)
-    }    
   }
 
   if (!user) {
@@ -86,26 +76,16 @@ function DashboardPage() {
       <header>Task Manager</header>
       <div className="todo-content">
       
-      <table>
-        <tbody>
-          <tr>
-              <th>Expense</th>
-              <th>Amount</th>
-          </tr>
-          
-          {expenses.map((expense) => (
-            <tr id={expense.id}>
-              <td>{expense.data.title}</td>
-              <td>{expense.data.value}</td>
-              <td><button onClick={handleUpdate}>edit</button></td>
-              </tr>
-            ))}
-            </tbody>
-      
-  </table>
+      {expenses.map((expense) => (
+            <Expense
+              id={expense.id}
+              key={expense.id}
+              title={expense.data.title} 
+              value={expense.data.value}
+            />
+          ))}
         
 </div>
-
       </div>
   
     </main>
