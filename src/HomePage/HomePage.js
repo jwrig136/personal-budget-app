@@ -3,7 +3,6 @@ import { useEffect, useContext} from 'react';
 import { Chart } from 'chart.js/auto';
 import { AuthContext } from '../Auth';
 import { Navigate } from 'react-router-dom';
-import * as d3 from "d3";
 import axios from 'axios';
 import Menu from '../Menu/Menu';
 
@@ -14,34 +13,37 @@ function HomePage() {
     return <Navigate to="/login" />;
   }
   else {
+
+    const getData = async () => {
+      try {
+       const responseagain = await axios.get("http://localhost:3001/api/expenses");
+        console.log(responseagain.data.length);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    getData();
+    
     var dataSource = {
       datasets: [
         {
           data: [],
-          backgroundColor: [
-            "#ffcd56",
-            "#ff6384",
-            "#36a2eb",
-            "#fd6b19",
-            "#8a2be2",
-            "#ffc0cb",
-            "#ac054d",
-            "#33cc33",
-            "#ff0000"
-          ],
+          backgroundColor: [],
         },
       ],
       labels: [],
     };
   
     
-      axios.get("http://localhost:3001/budget").then(function (res) {
-        for (var i = 0; i < res.data.myBudget.length; i++) {
-          dataSource.datasets[0].data[i] = res.data.myBudget[i].budget;
-          dataSource.labels[i] = res.data.myBudget[i].title;
+      axios.get("http://localhost:3001/api/expenses").then(function (res) {
+        for (var i = 0; i < res.data.length; i++) {
+          dataSource.datasets[0].data[i] = res.data[i].data.value;
+          dataSource.labels[i] = res.data[i].data.title;
+          dataSource.datasets[0].backgroundColor[i] = res.data[i].data.color;
         }
         createChart();
-        d3jsChart(res.data);
+       // d3jsChart(res.data);
   
       })
     
@@ -57,6 +59,7 @@ function HomePage() {
         data: dataSource,
       });
     }
+    /*
   
     function d3jsChart(data){
     var svg = d3.select("svg"),
@@ -109,6 +112,7 @@ function HomePage() {
               return d.data.title;
             });
           }
+          */
 
   }
   

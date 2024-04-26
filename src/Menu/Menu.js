@@ -8,7 +8,6 @@ function Menu() {
   const navigate = useNavigate();
  
     const handleLogout = () => {     
-      window.localStorage.setItem("isLoggedIn", false);          
         signOut(auth).then(() => {
         // Sign-out successful.
             navigate("/login");

@@ -1,26 +1,34 @@
 
-import {useState, useEffect, useContext} from 'react'
-import './DashboardPage.css'
-import Modal from "./Modal"
+import {useState, useEffect, useContext} from 'react';
+import './DashboardPage.css';
+import axios from 'axios';
 import Menu from '../Menu/Menu';
 import {db} from '../firebase';
 import Expense from './Expense';
 import { where } from 'firebase/firestore';
 import { AuthContext } from '../Auth';
 import { Navigate } from 'react-router-dom';
-import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDoc} from 'firebase/firestore'
+import {collection, addDoc, query, onSnapshot} from 'firebase/firestore'
+import randomColor from 'randomcolor';
+
+
 
 function DashboardPage() {
   const { user } = useContext(AuthContext);
 
-  const [openAddModal, setOpenAddModal] = useState(false)
-
   const [title, setTitle] = useState('')
-  //const [id, setId] = useState('')
   const [value, setValue] = useState()
 
   const [expenses, setExpenses] = useState([]);
  
+  const fetchData = async () => {
+    try {
+      await axios.post("http://localhost:3001/api/expenses", expenses);
+     
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   
   useEffect(() => {
     if(user){
@@ -34,6 +42,22 @@ function DashboardPage() {
   }
   },[])
 
+  fetchData();
+
+  function setColor(){
+    var color = randomColor();
+    axios.get("http://localhost:3001/api/expenses").then(function (res) {
+        for (var i = 0; i < res.data.length; i++) {
+          if (color == res.data[i].data.color){
+            setColor();
+          }
+        }
+      }) 
+    return color;
+  }
+  
+  
+ 
   /* function to add new task to firestore */
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -41,9 +65,9 @@ function DashboardPage() {
       await addDoc(collection(db, 'expenses'), {
         title: title,
         value: parseInt(value),
-        created: Timestamp.now(),
-        userId: user.uid, 
-
+        userId: user.uid,
+        color: setColor()
+        
       })
     } catch (err) {
       alert(err)
