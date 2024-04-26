@@ -8,7 +8,7 @@ import Expense from './Expense';
 import { where } from 'firebase/firestore';
 import { AuthContext } from '../Auth';
 import { Navigate } from 'react-router-dom';
-import {collection, addDoc, query, onSnapshot} from 'firebase/firestore'
+import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDoc} from 'firebase/firestore'
 import randomColor from 'randomcolor';
 
 
@@ -23,7 +23,9 @@ function DashboardPage() {
  
   const fetchData = async () => {
     try {
-      await axios.post("http://localhost:3001/api/expenses", expenses);
+     // console.log(expenses);
+      await axios.post("https://personal-budget-app-4cx6.onrender.com/api/expenses", expenses);
+     //console.log(response);
      
     } catch (error) {
       console.error("Error fetching data:", error);
