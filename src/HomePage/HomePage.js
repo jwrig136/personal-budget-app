@@ -16,7 +16,7 @@ function HomePage() {
 
     const getData = async () => {
       try {
-       const responseagain = await axios.get("http://localhost:3001/api/expenses");
+       const responseagain = await axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses");
         console.log(responseagain.data.length);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -36,7 +36,7 @@ function HomePage() {
     };
   
     
-      axios.get("http://localhost:3001/api/expenses").then(function (res) {
+      axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses").then(function (res) {
         for (var i = 0; i < res.data.length; i++) {
           dataSource.datasets[0].data[i] = res.data[i].data.value;
           dataSource.labels[i] = res.data[i].data.title;

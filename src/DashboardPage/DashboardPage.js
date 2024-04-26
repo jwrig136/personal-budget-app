@@ -46,7 +46,7 @@ function DashboardPage() {
 
   function setColor(){
     var color = randomColor();
-    axios.get("http://localhost:3001/api/expenses").then(function (res) {
+    axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses").then(function (res) {
         for (var i = 0; i < res.data.length; i++) {
           if (color == res.data[i].data.color){
             setColor();
