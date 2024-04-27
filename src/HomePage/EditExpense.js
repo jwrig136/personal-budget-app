@@ -8,7 +8,6 @@ function EditExpense({open, onClose, toEditExpenseTitle, toEditExpenseAmount, id
 
   const [expenseTitle, setExpenseTitle] = useState(toEditExpenseTitle)
   const [expenseAmount, setExpenseAmount] = useState(toEditExpenseAmount)
-  console.log(id);
 
   /* function to update firestore */
   const handleUpdate = async (e) => {

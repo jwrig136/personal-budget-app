@@ -5,6 +5,9 @@ import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDo
 import Expense from './Expense';
 import {db} from '../firebase';
 import axios from 'axios';
+import { getAggregateFromServer } from 'firebase/firestore';
+//import { sum } from 'firebase/firestore';
+import { sum } from 'firebase/firestore/lite';
 
 function Budget({id, title, budgetAmount}) {
 
@@ -18,6 +21,7 @@ function Budget({id, title, budgetAmount}) {
   const [expenseAmount, setExpenseAmount] = useState()
 
   const [expenses, setExpense] = useState([]);
+  const [sumOfExpenses, setSumOfExpenses] = useState([]);
  
   const postExpenseData = async () => {
     try {
@@ -36,19 +40,19 @@ function Budget({id, title, budgetAmount}) {
       })))
     })
   },[])
+
+  async function totalExpenseAmount() {
+    const coll = query(collection(db, 'expenses'), where('budgetId', '==', id))
+    const snapshot = await getAggregateFromServer(coll, {
+      sum: sum('expenseAmount')
+    });
+
+    setSumOfExpenses(snapshot.data().sum)
+  }
   
+  totalExpenseAmount();
   postExpenseData();
 
-
-  function totalExpenseAmount() {
-    var sum = 0;
-    axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses").then(function (res) {
-        for (var i = 0; i < res.data.length; i++) {
-          sum += res.data[i].data.expenseAmount;
-        }
-      })
-      return sum; 
-  }
   
  
   /* function to add new task to firestore */
@@ -84,7 +88,7 @@ function Budget({id, title, budgetAmount}) {
       <div className='task__body'>
         <h2>{title}</h2>
         <p>{budgetAmount}</p>
-        <p>The total amount expenses for {title} is ${totalExpenseAmount}</p>
+        <p>The total amount expenses for {title} is ${sumOfExpenses}</p>
         <div className='task__buttons'>
           <div className='task__deleteNedit'>
             <button 
@@ -124,6 +128,7 @@ function Budget({id, title, budgetAmount}) {
               key={expense.id}
               expenseTitle={expense.data.expenseTitle} 
               expenseAmount={expense.data.expenseAmount}
+              sum={sumOfExpenses}
             />
           ))}
         
