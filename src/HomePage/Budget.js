@@ -48,6 +48,7 @@ function Budget({id, title, budgetAmount}) {
     });
 
     setSumOfExpenses(snapshot.data().sum)
+    console.log(snapshot.data().sum);
   }
   
   totalExpenseAmount();

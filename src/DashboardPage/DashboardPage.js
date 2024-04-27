@@ -5,8 +5,63 @@ import { AuthContext } from '../Auth';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import Menu from '../Menu/Menu';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 
 function DashboardPage() {
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+  const options = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Chart.js Bar Chart',
+      },
+    },
+  };
+  
+  const labels = [];
+
+  axios.get("https://personal-budget-app-4cx6.onrender.com/api/budget").then(function (res) {
+        for (var i = 0; i < res.data.length; i++) {
+          data.labels[i] = res.data[i].data.title;
+          data.datasets[0].data[i] = res.data[i].data.budgetAmount;
+          data.datasets[1].data[i] = res.data[i].data.budgetAmount;
+        }
+      })
+  
+  var data = {
+    datasets: [
+      {
+        label: 'Dataset 1',
+        data: [],
+        backgroundColor: 'rgba(217, 30, 24)',
+      },
+      {
+        label: 'Dataset 2',
+        data: [],
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+    labels: [],
+  };
+  
+  
   const { user } = useContext(AuthContext);
   
 
@@ -200,6 +255,7 @@ function DashboardPage() {
         <canvas id="myChart" ></canvas>
         <svg width="400" height="400"></svg>
       </div>
+      <Bar options={options} data={data} />
     </article>
   </div>
 </main>

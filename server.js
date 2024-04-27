@@ -24,7 +24,6 @@ app.get("/api/budget", (req, res) => {
 })
 
 app.post("/api/expenses", (req, res) => {
-    // console.log(req.body)
     const expensesData = req.body;
      res.send(req.body)
      fs.writeFileSync("./expensesData.json", JSON.stringify(expensesData));
@@ -33,6 +32,17 @@ app.post("/api/expenses", (req, res) => {
  app.get("/api/expenses", (req, res) => {
      const expense = fs.readFileSync("./expensesData.json")
      res.send(expense)
+ })
+
+ app.post("/api/totalExpenseAmount", (req, res) => {
+    const expenseTotalData = req.body;
+     res.send(req.body)
+     fs.writeFileSync("./totalExpenseAmount.json", JSON.stringify(expenseTotalData));
+ })
+ 
+ app.get("/api/totalExpenseAmount", (req, res) => {
+     const expenseTotal = fs.readFileSync("./totalExpenseAmount.json")
+     res.send(expenseTotal)
  })
 
 
