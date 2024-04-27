@@ -34,7 +34,7 @@ function DashboardPage() {
     useEffect(() => {
       axios.get("https://personal-budget-app-4cx6.onrender.com/api/budget").then(function (res) {
         for (var i = 0; i < res.data.length; i++) {
-          dataSource.datasets[0].data[i] = res.data[i].data.value;
+          dataSource.datasets[0].data[i] = res.data[i].data.budgetAmount;
           dataSource.labels[i] = res.data[i].data.title;
           dataSource.datasets[0].backgroundColor[i] = res.data[i].data.color;
         }
