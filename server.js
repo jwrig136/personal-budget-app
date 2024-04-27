@@ -11,15 +11,15 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 
-app.post("/api/expenses", (req, res) => {
+app.post("/api/budget", (req, res) => {
    // console.log(req.body)
    const data = req.body;
     res.send(req.body)
-    fs.writeFileSync("./expenseData.json", JSON.stringify(data));
+    fs.writeFileSync("./budgetData.json", JSON.stringify(data));
 })
 
-app.get("/api/expenses", (req, res) => {
-    const expense = fs.readFileSync("./expenseData.json")
+app.get("/api/budget", (req, res) => {
+    const expense = fs.readFileSync("./budgetData.json")
     res.send(expense)
 })
 

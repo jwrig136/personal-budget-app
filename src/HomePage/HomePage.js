@@ -4,7 +4,7 @@ import './HomePage.css';
 import axios from 'axios';
 import Menu from '../Menu/Menu';
 import {db} from '../firebase';
-import Expense from './Expense';
+import Budget from './Budget';
 import { where } from 'firebase/firestore';
 import { AuthContext } from '../Auth';
 import { Navigate } from 'react-router-dom';
@@ -17,16 +17,13 @@ function HomePage() {
   const { user } = useContext(AuthContext);
 
   const [title, setTitle] = useState('')
-  const [value, setValue] = useState()
+  const [budgetAmount, setBudgetAmount] = useState()
 
-  const [expenses, setExpenses] = useState([]);
+  const [budget, setBudget] = useState([]);
  
-  const fetchData = async () => {
+  const fetchBudgetData = async () => {
     try {
-     // console.log(expenses);
-      await axios.post("https://personal-budget-app-4cx6.onrender.com/api/expenses", expenses);
-     //console.log(response);
-     
+      await axios.post("https://personal-budget-app-4cx6.onrender.com/api/budget", budget);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -34,9 +31,9 @@ function HomePage() {
   
   useEffect(() => {
     if(user){
-    const q = query(collection(db, 'expenses'), where('userId', '==', user.uid))
+    const q = query(collection(db, 'budget'), where('userId', '==', user.uid))
     onSnapshot(q, (querySnapshot) => {
-      setExpenses(querySnapshot.docs.map(doc => ({
+      setBudget(querySnapshot.docs.map(doc => ({
         id: doc.id,
         data: doc.data()
       })))
@@ -44,11 +41,11 @@ function HomePage() {
   }
   },[])
 
-  fetchData();
+  fetchBudgetData();
 
   function setColor(){
     var color = randomColor();
-    axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses").then(function (res) {
+    axios.get("https://personal-budget-app-4cx6.onrender.com/api/budget").then(function (res) {
         for (var i = 0; i < res.data.length; i++) {
           if (color == res.data[i].data.color){
             setColor();
@@ -64,9 +61,9 @@ function HomePage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await addDoc(collection(db, 'expenses'), {
+      await addDoc(collection(db, 'budget'), {
         title: title,
-        value: parseInt(value),
+        budgetAmount: parseInt(budgetAmount),
         userId: user.uid,
         color: setColor()
         
@@ -75,7 +72,7 @@ function HomePage() {
       alert(err)
     }
     setTitle("");
-    setValue("");
+    setBudgetAmount("");
   }
 
   if (!user) {
@@ -164,21 +161,22 @@ function HomePage() {
           value={title}
           placeholder='Enter title'/>
         <textarea 
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => setBudgetAmount(e.target.value)}
           placeholder='Enter the amount'
-          value={value}></textarea>
+          value={budgetAmount}>
+          </textarea>
         <button type='submit'>Done</button>
       </form> 
       <div className='taskManager'>
       <header>Task Manager</header>
       <div className="todo-content">
       
-      {expenses.map((expense) => (
-            <Expense
-              id={expense.id}
-              key={expense.id}
-              title={expense.data.title} 
-              value={expense.data.value}
+      {budget.map((budget) => (
+            <Budget
+              id={budget.id}
+              key={budget.id}
+              title={budget.data.title} 
+              budgetAmount={budget.data.budgetAmount}
             />
           ))}
         
