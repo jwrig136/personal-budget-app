@@ -1,4 +1,4 @@
-import './DashboardPage.css'
+import './HomePage.css'
 import {useState} from 'react'
 import EditExpense from './EditExpense';
 import { doc, updateDoc, deleteDoc} from "firebase/firestore";

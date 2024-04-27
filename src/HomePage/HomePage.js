@@ -1,128 +1,90 @@
-import React from 'react';
-import { useEffect, useContext} from 'react';
-import { Chart } from 'chart.js/auto';
-import { AuthContext } from '../Auth';
-import { Navigate } from 'react-router-dom';
+
+import {useState, useEffect, useContext} from 'react';
+import './HomePage.css';
 import axios from 'axios';
 import Menu from '../Menu/Menu';
+import {db} from '../firebase';
+import Expense from './Expense';
+import { where } from 'firebase/firestore';
+import { AuthContext } from '../Auth';
+import { Navigate } from 'react-router-dom';
+import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDoc} from 'firebase/firestore'
+import randomColor from 'randomcolor';
+
+
 
 function HomePage() {
   const { user } = useContext(AuthContext);
 
+  const [title, setTitle] = useState('')
+  const [value, setValue] = useState()
+
+  const [expenses, setExpenses] = useState([]);
+ 
+  const fetchData = async () => {
+    try {
+     // console.log(expenses);
+      await axios.post("https://personal-budget-app-4cx6.onrender.com/api/expenses", expenses);
+     //console.log(response);
+     
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
+  useEffect(() => {
+    if(user){
+    const q = query(collection(db, 'expenses'), where('userId', '==', user.uid))
+    onSnapshot(q, (querySnapshot) => {
+      setExpenses(querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data()
+      })))
+    })
+  }
+  },[])
+
+  fetchData();
+
+  function setColor(){
+    var color = randomColor();
+    axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses").then(function (res) {
+        for (var i = 0; i < res.data.length; i++) {
+          if (color == res.data[i].data.color){
+            setColor();
+          }
+        }
+      }) 
+    return color;
+  }
+  
+  
+ 
+  /* function to add new task to firestore */
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      await addDoc(collection(db, 'expenses'), {
+        title: title,
+        value: parseInt(value),
+        userId: user.uid,
+        color: setColor()
+        
+      })
+    } catch (err) {
+      alert(err)
+    }
+    setTitle("");
+    setValue("");
+  }
+
   if (!user) {
     return <Navigate to="/login" />;
   }
-  else {
-
-    const getData = async () => {
-      try {
-       const responseagain = await axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses");
-        console.log(responseagain.data.length);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    getData();
-    
-    var dataSource = {
-      datasets: [
-        {
-          data: [],
-          backgroundColor: [],
-        },
-      ],
-      labels: [],
-    };
-  
-    
-      axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses").then(function (res) {
-        for (var i = 0; i < res.data.length; i++) {
-          dataSource.datasets[0].data[i] = res.data[i].data.value;
-          dataSource.labels[i] = res.data[i].data.title;
-          dataSource.datasets[0].backgroundColor[i] = res.data[i].data.color;
-        }
-        createChart();
-       // d3jsChart(res.data);
-  
-      })
-    
-  
-  
-    function createChart() {
-      var ctx = document.getElementById("myChart").getContext("2d");
-      if(window.myDoughnutChart){
-        window.myDoughnutChart.destroy();
-      }
-      window.myDoughnutChart = new Chart(ctx, {
-        type: "doughnut",
-        data: dataSource,
-      });
-    }
-    /*
-  
-    function d3jsChart(data){
-    var svg = d3.select("svg"),
-          width = 400,
-          height = 400,
-          radius = Math.min(width, height) / 2,
-          g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-  
-        var color = d3.scaleOrdinal([
-                "#ffcd56",
-                "#ff6384",
-                "#36a2eb",
-                "#fd6b19",
-                "#8a2be2",
-                "#ffc0cb",
-                "#ac054d",
-                "#33cc33",
-                "#ff0000"
-              ]);
-  
-        var pie = d3.pie()
-          .sort(null)
-          .value(function(d) { return d.budget; });
-  
-        var path = d3.arc()
-          .outerRadius(radius)
-          .innerRadius(0);
-  
-        var inside = d3.arc()
-          .outerRadius(radius - 40)
-          .innerRadius(radius - 40);
-  
-          var arc = g.selectAll(".arc")
-            .data(pie(data.myBudget))
-            .enter().append("g")
-            .attr("class", "arc");
-  
-          arc.append("path")
-            .attr("d", path)
-            .attr("fill", function(d) {
-              return color(d.data.title);
-            });
-  
-          arc.append("text")
-            .attr("transform", function(d) {
-              return "translate(" + inside.centroid(d) + ")";
-            })
-            .attr("dy", "0.35em")
-            .text(function(d) {
-              return d.data.title;
-            });
-          }
-          */
-
-  }
-  
-      
 
   return (
-    
-    <main className="center" id="main">
+    <main>
       <Menu></Menu>
-  <div className="page-area">
     <section>
       <h3>Welcome to Personal Budget</h3>
 
@@ -133,7 +95,7 @@ function HomePage() {
       </p>
     </section>
 
-    <article>
+    
       <aside className="extra-content">
         <h3>Free</h3>
         <p>
@@ -194,16 +156,37 @@ function HomePage() {
           you are ready!
         </p>
       </div>
-
-      <h4>Chart</h4>
-      <div className="charts">
-        <canvas id="myChart" ></canvas>
-        <svg width="400" height="400"></svg>
+      <form onSubmit={handleSubmit} className='addTask' name='addTask'>
+        <input 
+          type='text' 
+          name='title' 
+          onChange={(e) => setTitle(e.target.value)} 
+          value={title}
+          placeholder='Enter title'/>
+        <textarea 
+          onChange={(e) => setValue(e.target.value)}
+          placeholder='Enter the amount'
+          value={value}></textarea>
+        <button type='submit'>Done</button>
+      </form> 
+      <div className='taskManager'>
+      <header>Task Manager</header>
+      <div className="todo-content">
+      
+      {expenses.map((expense) => (
+            <Expense
+              id={expense.id}
+              key={expense.id}
+              title={expense.data.title} 
+              value={expense.data.value}
+            />
+          ))}
+        
+</div>
       </div>
-    </article>
-  </div>
-</main>
-  );
+  
+    </main>
+  )
 }
 
-export default HomePage;
+export default HomePage
