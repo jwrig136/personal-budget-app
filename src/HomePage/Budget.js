@@ -3,7 +3,8 @@ import {useState, useEffect, useContext} from 'react';
 import EditBudget from './EditBudget';
 import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDoc, where, deleteDoc} from 'firebase/firestore'
 import Expense from './Expense';
-import {db} from '../firebase'
+import {db} from '../firebase';
+import axios from 'axios';
 
 function Budget({id, title, budgetAmount}) {
 
