@@ -4,20 +4,20 @@ import './EditBudget.css'
 import { doc, updateDoc } from "firebase/firestore";
 import {db} from '../firebase'
 
-function EditBudget({open, onClose, toEditTitle, toEditBudgetAmount, id}) {
+function EditExpense({open, onClose, toEditExpenseTitle, toEditExpenseAmount, id}) {
 
-  const [title, setTitle] = useState(toEditTitle)
-  const [budgetAmount, setBudgetAmount] = useState(toEditBudgetAmount)
+  const [expenseTitle, setExpenseTitle] = useState(toEditExpenseTitle)
+  const [expenseAmount, setExpenseAmount] = useState(toEditExpenseAmount)
   console.log(id);
 
   /* function to update firestore */
   const handleUpdate = async (e) => {
     e.preventDefault()
-    const taskDocRef = doc(db, 'budget', id)
+    const taskDocRef = doc(db, 'expenses', id)
     try{
       await updateDoc(taskDocRef, {
-        title: title,
-        budgetAmount: parseInt(budgetAmount)
+        expenseTitle: expenseTitle,
+        expenseAmount: parseInt(expenseAmount)
       })
       onClose()
     } catch (err) {
@@ -29,12 +29,12 @@ function EditBudget({open, onClose, toEditTitle, toEditBudgetAmount, id}) {
   return (
     <Modal modalLable='Edit Task' onClose={onClose} open={open}>
       <form onSubmit={handleUpdate} className='editTask'>
-        <input type='text' name='title' onChange={(e) => setTitle(e.target.value)} value={title}/>
-        <textarea onChange={(e) => setBudgetAmount(e.target.value)} value={budgetAmount}></textarea>
+        <input type='text' name='title' onChange={(e) => setExpenseTitle(e.target.value)} value={expenseTitle}/>
+        <textarea onChange={(e) => setExpenseAmount(e.target.value)} value={expenseAmount}></textarea>
         <button type='submit'>Edit</button>
       </form> 
     </Modal>
   )
 }
 
-export default EditBudget
+export default EditExpense

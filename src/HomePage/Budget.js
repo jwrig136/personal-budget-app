@@ -1,7 +1,8 @@
 import './HomePage.css'
-import {useState} from 'react'
+import {useState, useEffect, useContext} from 'react';
 import EditBudget from './EditBudget';
-import { doc, updateDoc, deleteDoc} from "firebase/firestore";
+import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDoc, where, deleteDoc} from 'firebase/firestore'
+import Expense from './Expense';
 import {db} from '../firebase'
 
 function Budget({id, title, budgetAmount}) {
@@ -10,6 +11,59 @@ function Budget({id, title, budgetAmount}) {
 
   const handleClose = () => {
     setOpen({edit:false, add:false})
+  }
+
+  const [expenseTitle, setExpenseTitle] = useState('')
+  const [expenseAmount, setExpenseAmount] = useState()
+
+  const [expenses, setExpense] = useState([]);
+ 
+  const postExpenseData = async () => {
+    try {
+      await axios.post("https://personal-budget-app-4cx6.onrender.com/api/expenses", expenses);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
+  useEffect(() => {
+    const q = query(collection(db, 'expenses'), where('budgetId', '==', id))
+    onSnapshot(q, (querySnapshot) => {
+      setExpense(querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data()
+      })))
+    })
+  },[])
+  
+  postExpenseData();
+
+
+  function totalExpenseAmount() {
+    var sum = 0;
+    axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses").then(function (res) {
+        for (var i = 0; i < res.data.length; i++) {
+          sum += res.data[i].data.expenseAmount;
+        }
+      })
+      return sum; 
+  }
+  
+ 
+  /* function to add new task to firestore */
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      await addDoc(collection(db, 'expenses'), {
+        expenseTitle: expenseTitle,
+        expenseAmount: parseInt(expenseAmount),
+        budgetId: id
+      })
+    } catch (err) {
+      alert(err)
+    }
+    setExpenseTitle("");
+    setExpenseAmount("");
   }
 
 
@@ -29,6 +83,7 @@ function Budget({id, title, budgetAmount}) {
       <div className='task__body'>
         <h2>{title}</h2>
         <p>{budgetAmount}</p>
+        <p>The total amount expenses for {title} is ${totalExpenseAmount}</p>
         <div className='task__buttons'>
           <div className='task__deleteNedit'>
             <button 
@@ -44,6 +99,36 @@ function Budget({id, title, budgetAmount}) {
             <button className='task__deleteButton' onClick={handleDelete}>Delete</button>
           </div>
         </div>
+        <form onSubmit={handleSubmit} className='addTask' name='addTask'>
+        <input 
+          type='text' 
+          name='title' 
+          onChange={(e) => setExpenseTitle(e.target.value)} 
+          value={expenseTitle}
+          placeholder='Enter title'/>
+        <textarea 
+          onChange={(e) => setExpenseAmount(e.target.value)}
+          placeholder='Enter the amount'
+          value={expenseAmount}>
+          </textarea>
+        <button type='submit'>Done</button>
+      </form> 
+      <div className='taskManager'>
+      <header>Task Manager</header>
+      <div className="todo-content">
+      
+      {expenses.map((expense) => (
+            <Expense
+              id={expense.id}
+              key={expense.id}
+              expenseTitle={expense.data.expenseTitle} 
+              expenseAmount={expense.data.expenseAmount}
+            />
+          ))}
+        
+
+      </div>
+      </div>
       </div>
 
 

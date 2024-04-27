@@ -13,15 +13,27 @@ app.use(bodyParser.urlencoded({ extended: true}));
 
 app.post("/api/budget", (req, res) => {
    // console.log(req.body)
-   const data = req.body;
+   const budgetData = req.body;
     res.send(req.body)
-    fs.writeFileSync("./budgetData.json", JSON.stringify(data));
+    fs.writeFileSync("./budgetData.json", JSON.stringify(budgetData));
 })
 
 app.get("/api/budget", (req, res) => {
-    const expense = fs.readFileSync("./budgetData.json")
-    res.send(expense)
+    const budget = fs.readFileSync("./budgetData.json")
+    res.send(budget)
 })
+
+app.post("/api/expenses", (req, res) => {
+    // console.log(req.body)
+    const expensesData = req.body;
+     res.send(req.body)
+     fs.writeFileSync("./expensesData.json", JSON.stringify(expensesData));
+ })
+ 
+ app.get("/api/expenses", (req, res) => {
+     const expense = fs.readFileSync("./expensesData.json")
+     res.send(expense)
+ })
 
 
 app.listen(port, () => {
