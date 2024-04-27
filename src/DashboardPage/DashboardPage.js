@@ -12,7 +12,7 @@ function DashboardPage() {
 
     const getData = async () => {
       try {
-       const responseagain = await axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses");
+       const responseagain = await axios.get("https://personal-budget-app-4cx6.onrender.com/api/budget");
         console.log(responseagain.data.length);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -32,7 +32,7 @@ function DashboardPage() {
     };
   
     useEffect(() => {
-      axios.get("https://personal-budget-app-4cx6.onrender.com/api/expenses").then(function (res) {
+      axios.get("https://personal-budget-app-4cx6.onrender.com/api/budget").then(function (res) {
         for (var i = 0; i < res.data.length; i++) {
           dataSource.datasets[0].data[i] = res.data[i].data.value;
           dataSource.labels[i] = res.data[i].data.title;
