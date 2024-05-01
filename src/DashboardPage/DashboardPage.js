@@ -20,9 +20,10 @@ function DashboardPage() {
     labels: []
   };
 
-  var doughnutData = {
+  var barData = {
     datasets: [
       {
+        label: "Budget Data",
         data: [],
         backgroundColor: [],
       },
@@ -37,9 +38,9 @@ function DashboardPage() {
         sum += res.data[i].data.budgetAmount;
         pieData.labels[i] = res.data[i].data.title;
         pieData.datasets[0].backgroundColor[i] = res.data[i].data.color;
-        doughnutData.datasets[0].data[i] = res.data[i].data.budgetAmount;
-        doughnutData.labels[i] = res.data[i].data.title;
-        doughnutData.datasets[0].backgroundColor[i] = res.data[i].data.color;
+        barData.datasets[0].data[i] = res.data[i].data.budgetAmount;
+        barData.labels[i] = res.data[i].data.title;
+        barData.datasets[0].backgroundColor[i] = res.data[i].data.color;
       }
 
       for (var j = 0; j < res.data.length; j++) {
@@ -47,7 +48,7 @@ function DashboardPage() {
       }
 
       createPieChart()
-      createDoughnutChart();
+      createBarChart();
       setBudget(res.data)
     })
 
@@ -65,14 +66,14 @@ function DashboardPage() {
     });
   }
 
-  function createDoughnutChart() {
+  function createBarChart() {
     var ctx = document.getElementById("myChart2").getContext("2d");
-    if (window.myDoughnutChart) {
-      window.myDoughnutChart.destroy();
+    if (window.myBarChart) {
+      window.myBarChart.destroy();
     }
-    window.myDoughnutChart = new Chart(ctx, {
-      type: "doughnut",
-      data: doughnutData,
+    window.myBarChart = new Chart(ctx, {
+      type: "bar",
+      data: barData,
     });
   }
 
