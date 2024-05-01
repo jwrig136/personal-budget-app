@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const port = process.env.PORT || 3001;
 const fs = require("fs");
 app.use(cors())
+const jwt = require('jsonwebtoken');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -32,6 +33,18 @@ app.post("/api/expenses", (req, res) => {
      const expense = fs.readFileSync("./expensesData.json")
      res.send(expense)
  })
+
+ app.post('/api/login', (req, res) => {
+    console.log(req.body);
+    //const { email, password } = req.body;
+        let token = jwt.sign({ id: req.body}, secretKey, { expiresIn: '3m' });
+            res.json({
+                success: true,
+                err: null,
+                token
+            });
+    
+});
 
 app.listen(port, () => {
     console.log(`API served at http://localhost:${port}`);
