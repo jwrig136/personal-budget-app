@@ -5,14 +5,15 @@ import axios from 'axios';
 import Menu from '../Menu/Menu';
 import {db} from '../firebase';
 import Budget from './Budget';
+import { signOut } from "firebase/auth";
+import { auth } from '../firebase';
 import { AuthContext } from '../Auth';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate} from 'react-router-dom';
 import {collection, addDoc, query, onSnapshot, where} from 'firebase/firestore'
 import randomColor from 'randomcolor';
 
-
-
 function HomePage() {
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [title, setTitle] = useState('')
   const [budgetAmount, setBudgetAmount] = useState()
@@ -72,6 +73,54 @@ function HomePage() {
   if (!user) {
     return <Navigate to="/login" />;
   }
+
+  function checkToken() {
+    const token = localStorage.getItem('jwt');
+    console.log("check");
+
+    if (token) {
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        const expirationTime = decodedToken.exp;
+        const currentTime = Date.now() / 1000;
+        const ask = currentTime - expirationTime;
+
+        if(ask >= 20 && ask <= 21){
+          const decision = prompt("Would you like to stay logged in? yes/no");
+          if (decision == "yes"){
+            axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', user)
+            .then(res => {
+                console.log(res);
+                    const token = res.data.token;
+                    localStorage.setItem('jwt', token);
+                checkToken();
+            });
+          }
+          else {
+            const missedTime = ask - 20;
+            console.log(missedTime)
+            TokenExpiration(currentTime, expirationTime + missedTime);
+          }
+        }
+        
+    }
+}
+
+function TokenExpiration(currentTime, expirationTime){
+  if (currentTime >= expirationTime) {
+    signOut(auth).then(() => {
+      // Sign-out successful.
+      navigate("/login");
+    }).catch((error) => {
+      alert(error);
+    });
+      localStorage.removeItem('jwt');
+      clearInterval(tokenChecking);
+  }
+
+}
+
+const tokenChecking = setInterval(checkToken, 1000);
+
 
   return (
     <main>

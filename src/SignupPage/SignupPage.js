@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import axios from 'axios';
 
 const SignupPage = () => {
     const navigate = useNavigate();
@@ -11,11 +12,21 @@ const SignupPage = () => {
     const onSubmit = async (e) => {
         e.preventDefault()
         await createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
+            .then(async (userCredential) => {
                 // Signed in
                 const user = userCredential.user;
                 console.log(user);
-                navigate("/")
+                const data = {
+                    email: email,
+                password: password,
+            };
+                await axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', data)
+                .then(res => {
+                    console.log(res);
+                        const token = res.data.token;
+                        localStorage.setItem('jwt', token);
+                        navigate("/")
+                });
                 // ...
             })
             .catch((error) => {

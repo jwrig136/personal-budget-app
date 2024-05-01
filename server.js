@@ -39,7 +39,7 @@ app.post("/api/expenses", (req, res) => {
     console.log(req.body);
     //const { email, password } = req.body;
     
-        let token = jwt.sign({info: req.body}, secretKey, { expiresIn: '10' });
+        let token = jwt.sign({info: req.body}, secretKey, { expiresIn: '1m' });
             res.json({
                 success: true,
                 err: null,
