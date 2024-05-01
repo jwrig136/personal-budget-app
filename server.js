@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
+const secretKey = 'My super secret key';
 
 app.post("/api/budget", (req, res) => {
    // console.log(req.body)
@@ -37,7 +38,8 @@ app.post("/api/expenses", (req, res) => {
  app.post('/api/login', (req, res) => {
     console.log(req.body);
     //const { email, password } = req.body;
-        let token = jwt.sign({ id: req.body}, secretKey, { expiresIn: '3m' });
+    
+        let token = jwt.sign({info: req.body}, secretKey, { expiresIn: '3m' });
             res.json({
                 success: true,
                 err: null,
