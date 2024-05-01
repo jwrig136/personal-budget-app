@@ -1,5 +1,4 @@
 // Expense API
-
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -33,18 +32,6 @@ app.post("/api/expenses", (req, res) => {
      const expense = fs.readFileSync("./expensesData.json")
      res.send(expense)
  })
-
- app.post("/api/totalExpenseAmount", (req, res) => {
-    const expenseTotalData = req.body;
-     res.send(req.body)
-     fs.writeFileSync("./totalExpenseAmount.json", JSON.stringify(expenseTotalData));
- })
- 
- app.get("/api/totalExpenseAmount", (req, res) => {
-     const expenseTotal = fs.readFileSync("./totalExpenseAmount.json")
-     res.send(expenseTotal)
- })
-
 
 app.listen(port, () => {
     console.log(`API served at http://localhost:${port}`);

@@ -5,20 +5,17 @@ import axios from 'axios';
 import Menu from '../Menu/Menu';
 import {db} from '../firebase';
 import Budget from './Budget';
-import { where } from 'firebase/firestore';
 import { AuthContext } from '../Auth';
 import { Navigate } from 'react-router-dom';
-import {collection, addDoc, Timestamp, query, orderBy, onSnapshot, doc, updateDoc} from 'firebase/firestore'
+import {collection, addDoc, query, onSnapshot, where} from 'firebase/firestore'
 import randomColor from 'randomcolor';
 
 
 
 function HomePage() {
   const { user } = useContext(AuthContext);
-
   const [title, setTitle] = useState('')
   const [budgetAmount, setBudgetAmount] = useState()
-
   const [budget, setBudget] = useState([]);
  
   const fetchBudgetData = async () => {
@@ -39,7 +36,7 @@ function HomePage() {
       })))
     })
   }
-  },[])
+  },[user])
 
   fetchBudgetData();
 
@@ -55,9 +52,6 @@ function HomePage() {
     return color;
   }
   
-  
- 
-  /* function to add new task to firestore */
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -84,15 +78,12 @@ function HomePage() {
       <Menu></Menu>
     <section>
       <h3>Welcome to Personal Budget</h3>
-
       <p>
         Do you know where you are spending your money? If you really stop to
         track it down, you would get surprised! Proper budget management depends
         on real data... and this app will help you with that!
       </p>
     </section>
-
-    
       <aside className="extra-content">
         <h3>Free</h3>
         <p>
@@ -101,7 +92,6 @@ function HomePage() {
         </p>
       </aside>
       <h3>Tips</h3>
-
       <div>
         <h4>Alerts</h4>
         <p>
@@ -109,7 +99,6 @@ function HomePage() {
           to never go over the budget.
         </p>
       </div>
-
       <div>
         <h4>Results</h4>
         <p>
@@ -119,7 +108,6 @@ function HomePage() {
           accounted for.
         </p>
       </div>
-
       <div>
         <h4>Alerts</h4>
         <p>
@@ -127,7 +115,6 @@ function HomePage() {
           to never go over the budget.
         </p>
       </div>
-
       <div>
         <h4>Results</h4>
         <p>
@@ -137,13 +124,11 @@ function HomePage() {
           accounted for.
         </p>
       </div>
-
       <aside>
         <img
           className="planner" src="/mbp.jpg" alt="Printable Monthly Budget Planner"
         />
       </aside>
-
       <div>
         <h4>Printable Planner</h4>
         <p>
@@ -170,7 +155,6 @@ function HomePage() {
       <div className='taskManager'>
       <header>Task Manager</header>
       <div className="todo-content">
-      
       {budget.map((budget) => (
             <Budget
               id={budget.id}
@@ -186,5 +170,4 @@ function HomePage() {
     </main>
   )
 }
-
 export default HomePage
