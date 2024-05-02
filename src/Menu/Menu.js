@@ -10,7 +10,9 @@ function Menu() {
   const handleLogout = () => {
     signOut(auth).then(() => {
       // Sign-out successful.
+      localStorage.removeItem('jwt')
       navigate("/login");
+
     }).catch((error) => {
       alert(error);
     });

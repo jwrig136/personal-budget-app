@@ -1,15 +1,15 @@
 
-import {useState, useEffect, useContext} from 'react';
+import { useState, useEffect, useContext } from 'react';
 import './HomePage.css';
 import axios from 'axios';
 import Menu from '../Menu/Menu';
-import {db} from '../firebase';
+import { db } from '../firebase';
 import Budget from './Budget';
 import { signOut } from "firebase/auth";
 import { auth } from '../firebase';
 import { AuthContext } from '../Auth';
-import { Navigate, useNavigate} from 'react-router-dom';
-import {collection, addDoc, query, onSnapshot, where} from 'firebase/firestore'
+import { Navigate, useNavigate } from 'react-router-dom';
+import { collection, addDoc, query, onSnapshot, where } from 'firebase/firestore'
 import randomColor from 'randomcolor';
 
 function HomePage() {
@@ -18,7 +18,7 @@ function HomePage() {
   const [title, setTitle] = useState('')
   const [budgetAmount, setBudgetAmount] = useState()
   const [budget, setBudget] = useState([]);
- 
+
   const fetchBudgetData = async () => {
     try {
       await axios.post("https://personal-budget-app-4cx6.onrender.com/api/budget", budget);
@@ -26,33 +26,33 @@ function HomePage() {
       console.error("Error fetching data:", error);
     }
   };
-  
+
   useEffect(() => {
-    if(user){
-    const q = query(collection(db, 'budget'), where('userId', '==', user.uid))
-    onSnapshot(q, (querySnapshot) => {
-      setBudget(querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        data: doc.data()
-      })))
-    })
-  }
-  },[user])
+    if (user) {
+      const q = query(collection(db, 'budget'), where('userId', '==', user.uid))
+      onSnapshot(q, (querySnapshot) => {
+        setBudget(querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          data: doc.data()
+        })))
+      })
+    }
+  }, [user])
 
   fetchBudgetData();
 
-  function setColor(){
+  function setColor() {
     var color = randomColor();
     axios.get("https://personal-budget-app-4cx6.onrender.com/api/budget").then(function (res) {
-        for (var i = 0; i < res.data.length; i++) {
-          if (color == res.data[i].data.color){
-            setColor();
-          }
+      for (var i = 0; i < res.data.length; i++) {
+        if (color == res.data[i].data.color) {
+          setColor();
         }
-      }) 
+      }
+    })
     return color;
   }
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -61,8 +61,9 @@ function HomePage() {
         budgetAmount: parseInt(budgetAmount),
         userId: user.uid,
         color: setColor()
-        
+
       })
+      refreshToken();
     } catch (err) {
       alert(err)
     }
@@ -76,63 +77,65 @@ function HomePage() {
 
   function checkToken() {
     const token = localStorage.getItem('jwt');
-    console.log("check");
 
     if (token) {
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
-        const expirationTime = decodedToken.exp;
-        const currentTime = Date.now() / 1000;
-        const ask = currentTime - expirationTime;
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      const expirationTime = decodedToken.exp;
+      const currentTime = Date.now() / 1000;
+      const ask = expirationTime - currentTime;
 
-        if(ask >= 20 && ask <= 21){
-          const decision = prompt("Would you like to stay logged in? yes/no");
-          if (decision == "yes"){
-            axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', user)
-            .then(res => {
-                console.log(res);
-                    const token = res.data.token;
-                    localStorage.setItem('jwt', token);
-                checkToken();
-            });
-          }
-          else {
-            const missedTime = ask - 20;
-            console.log(missedTime)
-            TokenExpiration(currentTime, expirationTime + missedTime);
-          }
+      if (ask >= 20 && ask <= 21) {
+        const decision = prompt("Would you like to stay logged in? yes/no");
+        if (decision.toLowerCase() == "yes" || decision.toLowerCase() == "y") {
+          refreshToken();
         }
-        
-    }
-}
+        checkToken();
+      }
+      else {
+        tokenExpiration(currentTime, expirationTime);
+      }
 
-function TokenExpiration(currentTime, expirationTime){
-  if (currentTime >= expirationTime) {
-    signOut(auth).then(() => {
-      // Sign-out successful.
-      navigate("/login");
-    }).catch((error) => {
-      alert(error);
-    });
-      localStorage.removeItem('jwt');
-      clearInterval(tokenChecking);
+    }
   }
 
-}
+  function refreshToken() {
+    axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', user)
+      .then(res => {
+        const token = res.data.token;
+        localStorage.setItem('jwt', token);
 
-const tokenChecking = setInterval(checkToken, 1000);
+      });
+  }
+
+  function tokenExpiration(currentTime, expirationTime) {
+
+    if (currentTime >= expirationTime) {
+      signOut(auth).then(() => {
+        // Sign-out successful.
+        navigate("/login");
+      }).catch((error) => {
+        alert(error);
+      });
+      localStorage.removeItem('jwt');
+      clearInterval(tokenChecking);
+    }
+
+  }
+
+  const tokenChecking = setInterval(checkToken, 1000);
 
 
   return (
     <main>
       <Menu></Menu>
-    <section>
-      <h3>Welcome to Personal Budget</h3>
-      <p>
-        Do you know where you are spending your money? If you really stop to
-        track it down, you would get surprised! Proper budget management depends
-        on real data... and this app will help you with that!
-      </p>
-    </section>
+      <section>
+        <h3>Welcome to Personal Budget</h3>
+        <p>
+          Do you know where you are spending your money? If you really stop to
+          track it down, you would get surprised! Proper budget management depends
+          on real data... and this app will help you with that!
+        </p>
+      </section>
       <aside className="extra-content">
         <h3>Free</h3>
         <p>
@@ -188,34 +191,35 @@ const tokenChecking = setInterval(checkToken, 1000);
         </p>
       </div>
       <form onSubmit={handleSubmit} className='addTask' name='addTask'>
-        <input 
-          type='text' 
-          name='title' 
-          onChange={(e) => setTitle(e.target.value)} 
+        <input
+          type='text'
+          name='title'
+          onChange={(e) => setTitle(e.target.value)}
           value={title}
-          placeholder='Enter title'/>
-        <textarea 
+          placeholder='Enter title' />
+        <textarea
           onChange={(e) => setBudgetAmount(e.target.value)}
           placeholder='Enter the amount'
           value={budgetAmount}>
-          </textarea>
+        </textarea>
         <button type='submit'>Done</button>
-      </form> 
+      </form>
       <div className='taskManager'>
-      <header>Task Manager</header>
-      <div className="todo-content">
-      {budget.map((budget) => (
+        <header>Task Manager</header>
+        <div className="todo-content">
+          {budget.map((budget) => (
             <Budget
               id={budget.id}
               key={budget.id}
-              title={budget.data.title} 
+              title={budget.data.title}
               budgetAmount={budget.data.budgetAmount}
+              userInfo={user}
             />
           ))}
-        
-</div>
+
+        </div>
       </div>
-  
+
     </main>
   )
 }

@@ -12,6 +12,7 @@ function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [budget, setBudget] = useState([]);
+  const [isData, setisData] = useState({ data: true });
 
   var pieData = {
     datasets: [
@@ -35,25 +36,35 @@ function DashboardPage() {
   };
 
   useEffect(() => {
-    axios.get("https://personal-budget-app-4cx6.onrender.com/api/budget").then(function (res) {
-      var sum = 0;
-      for (var i = 0; i < res.data.length; i++) {
-        sum += res.data[i].data.budgetAmount;
-        pieData.labels[i] = res.data[i].data.title;
-        pieData.datasets[0].backgroundColor[i] = res.data[i].data.color;
-        barData.datasets[0].data[i] = res.data[i].data.budgetAmount;
-        barData.labels[i] = res.data[i].data.title;
-        barData.datasets[0].backgroundColor[i] = res.data[i].data.color;
-      }
+    if (user) {
+      axios.get("https://personal-budget-app-4cx6.onrender.com/api/budget").then(function (res) {
+        var sum = 0;
+        for (var i = 0; i < res.data.length; i++) {
+          sum += res.data[i].data.budgetAmount;
+          pieData.labels[i] = res.data[i].data.title;
+          pieData.datasets[0].backgroundColor[i] = res.data[i].data.color;
+          barData.datasets[0].data[i] = res.data[i].data.budgetAmount;
+          barData.labels[i] = res.data[i].data.title;
+          barData.datasets[0].backgroundColor[i] = res.data[i].data.color;
+        }
 
-      for (var j = 0; j < res.data.length; j++) {
-        pieData.datasets[0].data[j] = (res.data[j].data.budgetAmount / sum) * 100;
-      }
+        for (var j = 0; j < res.data.length; j++) {
+          pieData.datasets[0].data[j] = (res.data[j].data.budgetAmount / sum) * 100;
+        }
 
-      createPieChart()
-      createBarChart();
-      setBudget(res.data)
-    })
+        if (res.data.length != 0) {
+          createPieChart()
+          createBarChart();
+        }
+        else {
+          setisData({ ...isData, data: false })
+        }
+
+
+
+        setBudget(res.data)
+      })
+    }
 
   }, []);
 
@@ -86,50 +97,48 @@ function DashboardPage() {
 
   function checkToken() {
     const token = localStorage.getItem('jwt');
-    console.log("check");
 
     if (token) {
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
-        const expirationTime = decodedToken.exp;
-        const currentTime = Date.now() / 1000;
-        const ask = currentTime - expirationTime;
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      const expirationTime = decodedToken.exp;
+      const currentTime = Date.now() / 1000;
+      const ask = expirationTime - currentTime;
 
-        if(ask >= 20 && ask <= 21){
-          const decision = prompt("Would you like to stay logged in? yes/no");
-          if (decision == "yes"){
-            axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', user)
+      if (ask >= 20 && ask <= 21) {
+        const decision = prompt("Would you like to stay logged in? yes/no");
+        if (decision.toLowerCase() == "yes" || decision.toLowerCase() == "y") {
+          axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', user)
             .then(res => {
-                console.log(res);
-                    const token = res.data.token;
-                    localStorage.setItem('jwt', token);
-                checkToken();
-            });
-          }
-          else {
-            const missedTime = ask - 20;
-            console.log(missedTime)
-            TokenExpiration(currentTime, expirationTime + missedTime);
-          }
-        }
-        
-    }
-}
+              const token = res.data.token;
+              localStorage.setItem('jwt', token);
 
-function TokenExpiration(currentTime, expirationTime){
-  if (currentTime >= expirationTime) {
-    signOut(auth).then(() => {
-      // Sign-out successful.
-      navigate("/login");
-    }).catch((error) => {
-      alert(error);
-    });
-      localStorage.removeItem('jwt');
-      clearInterval(tokenChecking);
+            });
+        }
+        checkToken();
+      }
+      else {
+        tokenExpiration(currentTime, expirationTime);
+      }
+
+    }
   }
 
-}
+  function tokenExpiration(currentTime, expirationTime) {
 
-const tokenChecking = setInterval(checkToken, 1000);
+    if (currentTime >= expirationTime) {
+      signOut(auth).then(() => {
+        // Sign-out successful.
+        navigate("/login");
+      }).catch((error) => {
+        alert(error);
+      });
+      localStorage.removeItem('jwt');
+      clearInterval(tokenChecking);
+    }
+
+  }
+
+  const tokenChecking = setInterval(checkToken, 1000);
 
   return (
     <main className="center" id="main">
@@ -143,29 +152,40 @@ const tokenChecking = setInterval(checkToken, 1000);
             on real data... and this app will help you with that!
           </p>
         </section>
-        <table>
-          <tbody>
-            <tr>
-              <th>Budget</th>
-              <th>Budget Limit</th>
-              <th>Current Total</th>
-              <th>Amount Leftover</th>
-            </tr>
-            {budget.map((budget) => (
-              <BudgetTable
-                id={budget.id}
-                key={budget.id}
-                title={budget.data.title}
-                budgetAmount={budget.data.budgetAmount}
-              />
-            ))}
-          </tbody>
-        </table>
-        <h4>Chart</h4>
-        <div className="charts">
-          <canvas id="myChart" ></canvas>
-          <canvas id="myChart2" ></canvas>
-        </div>
+        {!(isData.data) &&
+          <div>
+            <p>Add Data</p>
+          </div>}
+        {isData.data &&
+          <div className="charts">
+            <table>
+              <tbody>
+                <tr>
+                  <th>Budget</th>
+                  <th>Budget Limit</th>
+                  <th>Current Total</th>
+                  <th>Amount Leftover</th>
+                </tr>
+                {budget.map((budget) => (
+                  <BudgetTable
+                    id={budget.id}
+                    key={budget.id}
+                    title={budget.data.title}
+                    budgetAmount={budget.data.budgetAmount}
+                  />
+                ))}
+
+
+              </tbody>
+            </table>
+          </div>
+        }
+        {isData.data &&
+          <div className="charts">
+            <canvas id="myChart" ></canvas>
+            <canvas id="myChart2" ></canvas>
+          </div>
+        }
       </div>
     </main>
   );

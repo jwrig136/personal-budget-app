@@ -4,8 +4,9 @@ import EditBudget from './EditBudget';
 import { collection, addDoc, query, onSnapshot, doc, where, deleteDoc } from 'firebase/firestore'
 import Expense from './Expense';
 import { db } from '../firebase';
+import axios from 'axios';
 
-function Budget({ id, title, budgetAmount }) {
+function Budget({ id, title, budgetAmount, userInfo }) {
   const [open, setOpen] = useState({ edit: false, add: false })
   const handleClose = () => {
     setOpen({ edit: false, add: false })
@@ -32,6 +33,7 @@ function Budget({ id, title, budgetAmount }) {
         expenseAmount: parseInt(expenseAmount),
         budgetId: id
       })
+      refreshToken();
     } catch (err) {
       alert(err)
     }
@@ -43,9 +45,19 @@ function Budget({ id, title, budgetAmount }) {
     const taskDocRef = doc(db, 'budget', id)
     try {
       await deleteDoc(taskDocRef)
+      refreshToken();
     } catch (err) {
       alert(err)
     }
+  }
+
+  function refreshToken() {
+    axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', userInfo)
+      .then(res => {
+        const token = res.data.token;
+        localStorage.setItem('jwt', token);
+
+      });
   }
 
   return (
@@ -75,6 +87,7 @@ function Budget({ id, title, budgetAmount }) {
             placeholder='Enter the amount'
             value={expenseAmount}>
           </textarea>
+          <button type='submit'>Done</button>
         </form>
         <div className='taskManager'>
           <header>Task Manager</header>
@@ -85,6 +98,7 @@ function Budget({ id, title, budgetAmount }) {
                 key={expense.id}
                 expenseTitle={expense.data.expenseTitle}
                 expenseAmount={expense.data.expenseAmount}
+                userInfo={userInfo}
               />
             ))}
           </div>
@@ -96,7 +110,8 @@ function Budget({ id, title, budgetAmount }) {
           toEditTitle={title}
           toEditBudgetAmount={budgetAmount}
           open={open.edit}
-          id={id} />
+          id={id}
+          userInfo={userInfo} />
       }
     </div>
   )

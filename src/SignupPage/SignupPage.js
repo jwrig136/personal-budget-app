@@ -12,21 +12,15 @@ const SignupPage = () => {
     const onSubmit = async (e) => {
         e.preventDefault()
         await createUserWithEmailAndPassword(auth, email, password)
-            .then(async (userCredential) => {
+            .then((userCredential) => {
                 // Signed in
                 const user = userCredential.user;
-                console.log(user);
-                const data = {
-                    email: email,
-                password: password,
-            };
-                await axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', data)
-                .then(res => {
-                    console.log(res);
-                        const token = res.data.token;
-                        localStorage.setItem('jwt', token);
-                        navigate("/")
-                });
+            axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', user)
+            .then(res => {
+                const token = res.data.token;
+                localStorage.setItem('jwt', token);
+                navigate("/")
+            });
                 // ...
             })
             .catch((error) => {
