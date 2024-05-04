@@ -113,6 +113,7 @@ function HomePage() {
       signOut(auth).then(() => {
         // Sign-out successful.
         navigate("/login");
+        window.location.reload();
       }).catch((error) => {
         alert(error);
       });

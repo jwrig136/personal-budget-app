@@ -1,34 +1,36 @@
-import React, { useState, useContext } from 'react';
+import React, { useState} from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { NavLink, useNavigate, Navigate } from 'react-router-dom'
-import { AuthContext } from '../Auth';
 import axios from 'axios';
 
 const Login = () => {
     const navigate = useNavigate();
+    const [loginValid, setLoginValid] = useState({ data: true });
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [user, setUser] = useState('');
 
     const onLogin = (e) => {
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in
-                axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', user)
+                axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', userCredential)
                     .then(res => {
                         const token = res.data.token;
                         localStorage.setItem('jwt', token);
                         navigate("/")
 
                     });
+                    setUser(userCredential);
             })
             .catch((error) => {
-                alert(error);
+                setLoginValid({ ...loginValid, data: false })
             });
 
     }
-    const { user } = useContext(AuthContext);
+    console.log(user);
 
     if (user) {
         return <Navigate to="/" />;
@@ -78,6 +80,11 @@ const Login = () => {
                                 </button>
                             </div>
                         </form>
+                        {!(loginValid.data) &&
+                        <div>
+                        <p>'The email/password entered is incorrect'</p>
+                        </div>
+}
 
                         <p className="text-sm text-white text-center">
                             No account yet? {' '}
