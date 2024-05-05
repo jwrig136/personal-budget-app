@@ -160,7 +160,7 @@ function HomePage() {
             placeholder='Enter Budget Amount'
             value={budgetAmount}>
           </input>
-          <button type='submit'>Done</button>
+          <button type='submit'>Submit Budget</button>
         </form>
         <div className="budget-content">
           {budget.map((budget) => (

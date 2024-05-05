@@ -67,7 +67,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
 
   return (
     <main>
-      <div className='budget'>
+      <div className='budgetPage'>
         <h3>{title} : ${budgetAmount}</h3>
         <div className='budget__buttons'>
           <div className='budget__deleteNedit'>
@@ -95,7 +95,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
               placeholder='Enter Expense Amount'
               value={expenseAmount}>
             </input>
-            <button type='submit'>Done</button>
+            <button type='submit'>Submit Expense</button>
           </form>
           <div className="expense-content">
             {expenses.map((expense) => (
