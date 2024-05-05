@@ -1,10 +1,10 @@
-import './HomePage.css'
 import { useState, useEffect } from 'react';
 import EditBudget from './EditBudget';
 import { collection, addDoc, query, onSnapshot, doc, where, deleteDoc } from 'firebase/firestore'
 import Expense from './Expense';
 import { db } from '../firebase';
 import axios from 'axios';
+import './Budget.scss'
 
 function Budget({ id, title, budgetAmount, userInfo }) {
   const [open, setOpen] = useState({ edit: false, add: false })
@@ -12,7 +12,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
     setOpen({ edit: false, add: false })
   }
   const [expenseTitle, setExpenseTitle] = useState('')
-  const [expenseAmount, setExpenseAmount] = useState()
+  const [expenseAmount, setExpenseAmount] = useState('')
   const [expenses, setExpense] = useState([]);
 
   useEffect(() => {
@@ -28,11 +28,16 @@ function Budget({ id, title, budgetAmount, userInfo }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await addDoc(collection(db, 'expenses'), {
-        expenseTitle: expenseTitle,
-        expenseAmount: parseInt(expenseAmount),
-        budgetId: id
-      })
+      if (expenseTitle == '' || expenseAmount == '') {
+        alert("Please enter a valid expense item")
+      }
+      else {
+        await addDoc(collection(db, 'expenses'), {
+          expenseTitle: expenseTitle,
+          expenseAmount: parseInt(expenseAmount),
+          budgetId: id
+        })
+      }
       refreshToken();
     } catch (err) {
       alert(err)
@@ -61,37 +66,38 @@ function Budget({ id, title, budgetAmount, userInfo }) {
   }
 
   return (
-    <div>
-      <div className='task__body'>
-        <h2>Budget: {title}</h2>
-        <p>{budgetAmount}</p>
-        <div className='task__buttons'>
-          <div className='task__deleteNedit'>
+    <main>
+      <div className='budget'>
+        <h3>{title} : ${budgetAmount}</h3>
+        <div className='budget__buttons'>
+          <div className='budget__deleteNedit'>
             <button
-              className='task__editButton'
+              className='budget__editButton'
               onClick={() => setOpen({ ...open, edit: true })}>
               Edit
             </button>
             <button className='task__deleteButton' onClick={handleDelete}>Delete</button>
           </div>
         </div>
-        <form onSubmit={handleSubmit} className='addTask' name='addTask'>
-          <input
-            type='text'
-            name='title'
-            onChange={(e) => setExpenseTitle(e.target.value)}
-            value={expenseTitle}
-            placeholder='Enter title' />
-          <textarea
-            onChange={(e) => setExpenseAmount(e.target.value)}
-            placeholder='Enter the amount'
-            value={expenseAmount}>
-          </textarea>
-          <button type='submit'>Done</button>
-        </form>
-        <div className='taskManager'>
-          <header>Task Manager</header>
-          <div className="todo-content">
+
+        <div className='expenseDisplay'>
+          <h4>Add Expenses</h4>
+          <form onSubmit={handleSubmit} className='addExpense' name='addExpense'>
+            <input
+              type='text'
+              name='title'
+              onChange={(e) => setExpenseTitle(e.target.value)}
+              value={expenseTitle}
+              placeholder='Enter Expense Title' />
+            <input
+              name='expenseAmount'
+              onChange={(e) => setExpenseAmount(e.target.value)}
+              placeholder='Enter Expense Amount'
+              value={expenseAmount}>
+            </input>
+            <button type='submit'>Done</button>
+          </form>
+          <div className="expense-content">
             {expenses.map((expense) => (
               <Expense
                 id={expense.id}
@@ -113,7 +119,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
           id={id}
           userInfo={userInfo} />
       }
-    </div>
+    </main>
   )
 }
 

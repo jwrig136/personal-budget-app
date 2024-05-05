@@ -7,6 +7,8 @@ import Menu from '../Menu/Menu';
 import BudgetTable from './BudgetTable';
 import { signOut } from "firebase/auth";
 import { auth } from '../firebase';
+import Footer from '../Footer/Footer';
+import './Dashboard.scss'
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -143,7 +145,7 @@ function DashboardPage() {
   return (
     <main className="center" id="main">
       <Menu></Menu>
-      <div className="page-area">
+      <div className="dashboardPage">
         <section>
           <h3>Welcome to Personal Budget</h3>
           <p>
@@ -153,12 +155,20 @@ function DashboardPage() {
           </p>
         </section>
         {!(isData.data) &&
-          <div>
-            <p>Add Data</p>
+          <div className='noData'>
+            <p>Add Data to see Charts!!</p>
           </div>}
         {isData.data &&
           <div className="charts">
-            <table>
+            <section>
+              <h4>Welcome to Personal Budget</h4>
+              <p>
+                Do you know where you are spending your money? If you really stop to
+                track it down, you would get surprised! Proper budget management depends
+                on real data... and this app will help you with that!
+              </p>
+            </section>
+            <table className='chartsElement'>
               <tbody>
                 <tr>
                   <th>Budget</th>
@@ -178,15 +188,28 @@ function DashboardPage() {
 
               </tbody>
             </table>
-          </div>
-        }
-        {isData.data &&
-          <div className="charts">
-            <canvas id="myChart" ></canvas>
-            <canvas id="myChart2" ></canvas>
+            <section>
+              <h4>Welcome to Personal Budget</h4>
+              <p>
+                Do you know where you are spending your money? If you really stop to
+                track it down, you would get surprised! Proper budget management depends
+                on real data... and this app will help you with that!
+              </p>
+            </section>
+            <canvas className='chartsElement' id="myChart" ></canvas>
+            <section>
+              <h4>Welcome to Personal Budget</h4>
+              <p>
+                Do you know where you are spending your money? If you really stop to
+                track it down, you would get surprised! Proper budget management depends
+                on real data... and this app will help you with that!
+              </p>
+            </section>
+            <canvas className='chartsElement' id="myChart2" ></canvas>
           </div>
         }
       </div>
+      <Footer></Footer>
     </main>
   );
 }

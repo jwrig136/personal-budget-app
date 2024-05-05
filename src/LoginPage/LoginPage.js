@@ -1,4 +1,5 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
+import './LoginPage.scss';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { NavLink, useNavigate, Navigate } from 'react-router-dom'
@@ -23,14 +24,13 @@ const Login = () => {
                         navigate("/")
 
                     });
-                    setUser(userCredential);
+                setUser(userCredential);
             })
             .catch((error) => {
                 setLoginValid({ ...loginValid, data: false })
             });
 
     }
-    console.log(user);
 
     if (user) {
         return <Navigate to="/" />;
@@ -38,60 +38,62 @@ const Login = () => {
 
     return (
         <>
-            <main >
-                <section>
+            <main>
+                <section className='loginForm'>
                     <div>
-                        <p> FocusApp </p>
-
+                        <h1>Login</h1>
                         <form>
-                            <div>
+                            <div className='info'>
                                 <label htmlFor="email-address">
-                                    Email address
+                                    Email Address:
                                 </label>
                                 <input
                                     id="email-address"
                                     name="email"
                                     type="email"
                                     required
-                                    placeholder="Email address"
+                                    placeholder="Email Address"
+                                    autoComplete="off"
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
 
-                            <div>
+                            <div className='info'>
                                 <label htmlFor="password">
-                                    Password
+                                    Password:
                                 </label>
                                 <input
                                     id="password"
                                     name="password"
                                     type="password"
+                                    autoComplete="off"
                                     required
                                     placeholder="Password"
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                             </div>
 
-                            <div>
-                                <button
-                                    onClick={onLogin}
-                                >
-                                    Login
-                                </button>
+                            <div className='info'>
+                                <button onClick={onLogin}>Login</button>
                             </div>
                         </form>
                         {!(loginValid.data) &&
-                        <div>
-                        <p>'The email/password entered is incorrect'</p>
-                        </div>
-}
+                            <div className='info'>
+                                <div className='incorrectInfo'>
+                                    <p>The email/password entered is incorrect</p>
+                                </div>
+                            </div>
+                        }
 
-                        <p className="text-sm text-white text-center">
-                            No account yet? {' '}
-                            <NavLink to="/signup">
-                                Sign up
-                            </NavLink>
-                        </p>
+                        <div className='info'>
+
+                            <p className="text-sm text-white text-center">
+                                No account yet? {' '}
+                                <NavLink to="/signup">
+                                    Sign up
+                                </NavLink>
+                            </p>
+                        </div>
 
                     </div>
                 </section>

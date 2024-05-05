@@ -10,7 +10,6 @@ import HomePage from './HomePage/HomePage';
 import LoginPage from './LoginPage/LoginPage';
 import DashboardPage from './DashboardPage/DashboardPage';
 import SignupPage from "./SignupPage/SignupPage";
-import Footer from './Footer/Footer';
 import { AuthProvider } from "./Auth";
 
 function App() {
@@ -26,7 +25,6 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
           </Routes>
         </div>
-        <Footer />
       </Router>
     </AuthProvider>
   );

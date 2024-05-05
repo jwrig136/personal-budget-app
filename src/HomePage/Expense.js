@@ -1,9 +1,9 @@
-import './HomePage.css'
 import { useState } from 'react'
 import EditExpense from './EditExpense';
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from '../firebase'
 import axios from 'axios';
+import './Expense.scss'
 
 function Expense({ id, expenseTitle, expenseAmount, userInfo }) {
   const [open, setOpen] = useState({ edit: false })
@@ -32,17 +32,16 @@ function Expense({ id, expenseTitle, expenseAmount, userInfo }) {
 
   return (
     <div>
-      <div className='task__body'>
-        <h2>{expenseTitle}</h2>
-        <p>{expenseAmount}</p>
-        <div className='task__buttons'>
-          <div className='task__deleteNedit'>
+      <div className='expense_body'>
+        <h5>You spent ${expenseAmount} on {expenseTitle}</h5>
+        <div className='expense__buttons'>
+          <div className='expense__deleteNedit'>
             <button
-              className='task__editButton'
+              className='expense__editButton'
               onClick={() => setOpen({ ...open, edit: true })}>
               Edit
             </button>
-            <button className='task__deleteButton' onClick={handleDelete}>Delete</button>
+            <button className='expense__deleteButton' onClick={handleDelete}>Delete</button>
           </div>
         </div>
       </div>

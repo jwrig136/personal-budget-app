@@ -1,0 +1,37 @@
+.hero {
+  height: 300px;
+  width: 100%;
+  background-color: #E6C497;
+  background-image: url("../../public/budget-logo.jpeg");
+  background-size: 30%;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  padding-top: 2%;
+}
+
+div.hero h1,
+div.hero h2 {
+  text-align: center;
+  margin: 0;
+}
+
+div.hero h1 {
+  color: #fff;
+  font-size: 4.2em;
+  margin-bottom: 20px;
+}
+
+div.hero h2 {
+  color: black;
+}
+
+.skip {
+  display: block;
+  line-height: 44px;
+  padding: 0 20px;
+  margin-top: -44px;
+}
+
+.skip:focus {
+  margin-top: 0;
+}

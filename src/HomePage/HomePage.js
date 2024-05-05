@@ -1,8 +1,9 @@
 
 import { useState, useEffect, useContext } from 'react';
-import './HomePage.css';
+import './HomePage.scss';
 import axios from 'axios';
 import Menu from '../Menu/Menu';
+import Footer from '../Footer/Footer';
 import { db } from '../firebase';
 import Budget from './Budget';
 import { signOut } from "firebase/auth";
@@ -15,8 +16,8 @@ import randomColor from 'randomcolor';
 function HomePage() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const [title, setTitle] = useState('')
-  const [budgetAmount, setBudgetAmount] = useState()
+  const [budgetTitle, setBudgetTitle] = useState('')
+  const [budgetAmount, setBudgetAmount] = useState('')
   const [budget, setBudget] = useState([]);
 
   const fetchBudgetData = async () => {
@@ -56,18 +57,23 @@ function HomePage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await addDoc(collection(db, 'budget'), {
-        title: title,
-        budgetAmount: parseInt(budgetAmount),
-        userId: user.uid,
-        color: setColor()
+      if (budgetTitle == '' || budgetAmount == '') {
+        alert("Please enter a valid budget item")
+      }
+      else {
+        await addDoc(collection(db, 'budget'), {
+          title: budgetTitle,
+          budgetAmount: parseInt(budgetAmount),
+          userId: user.uid,
+          color: setColor()
 
-      })
+        })
+      }
       refreshToken();
     } catch (err) {
       alert(err)
     }
-    setTitle("");
+    setBudgetTitle("");
     setBudgetAmount("");
   }
 
@@ -129,7 +135,7 @@ function HomePage() {
   return (
     <main>
       <Menu></Menu>
-      <section>
+      <section className='homepage'>
         <h3>Welcome to Personal Budget</h3>
         <p>
           Do you know where you are spending your money? If you really stop to
@@ -137,77 +143,26 @@ function HomePage() {
           on real data... and this app will help you with that!
         </p>
       </section>
-      <aside className="extra-content">
-        <h3>Free</h3>
-        <p>
-          This app is completely free!!! And you are the only one holding your
-          data!
-        </p>
-      </aside>
-      <h3>Tips</h3>
-      <div>
-        <h4>Alerts</h4>
-        <p>
-          What if your clothing budget ended? You will get an alert. The goal is
-          to never go over the budget.
-        </p>
-      </div>
-      <div>
-        <h4>Results</h4>
-        <p>
-          People who stick to a financial plan, budgeting every expense, get out
-          of debt faster! Also, they to live happier lives... since they expend
-          without guilt or fear... because they know it is all good and
-          accounted for.
-        </p>
-      </div>
-      <div>
-        <h4>Alerts</h4>
-        <p>
-          What if your clothing budget ended? You will get an alert. The goal is
-          to never go over the budget.
-        </p>
-      </div>
-      <div>
-        <h4>Results</h4>
-        <p>
-          People who stick to a financial plan, budgeting every expense, get out
-          of debt faster! Also, they to live happier lives... since they expend
-          without guilt or fear... because they know it is all good and
-          accounted for.
-        </p>
-      </div>
-      <aside>
-        <img
-          className="planner" src="/mbp.jpg" alt="Printable Monthly Budget Planner"
-        />
-      </aside>
-      <div>
-        <h4>Printable Planner</h4>
-        <p>
-          Some people find it easier to fill out their budget on paper first so
-          they do not forget any expenses. If that is you, try downloading this
-          monthly budget planner on the right, fill it out, and come back when
-          you are ready!
-        </p>
-      </div>
-      <form onSubmit={handleSubmit} className='addTask' name='addTask'>
-        <input
-          type='text'
-          name='title'
-          onChange={(e) => setTitle(e.target.value)}
-          value={title}
-          placeholder='Enter title' />
-        <textarea
-          onChange={(e) => setBudgetAmount(e.target.value)}
-          placeholder='Enter the amount'
-          value={budgetAmount}>
-        </textarea>
-        <button type='submit'>Done</button>
-      </form>
-      <div className='taskManager'>
-        <header>Task Manager</header>
-        <div className="todo-content">
+
+      <div className='budgetDisplay'>
+        <h3>Add a Budget Item</h3>
+        <form onSubmit={handleSubmit} className='addBudget' name='addBudget'>
+          <input
+            type='text'
+            name='title'
+            onChange={(e) => setBudgetTitle(e.target.value)}
+            value={budgetTitle}
+            placeholder='Enter Budget Title' />
+          <input
+            type='number'
+            name='budgetAmount'
+            onChange={(e) => setBudgetAmount(e.target.value)}
+            placeholder='Enter Budget Amount'
+            value={budgetAmount}>
+          </input>
+          <button type='submit'>Done</button>
+        </form>
+        <div className="budget-content">
           {budget.map((budget) => (
             <Budget
               id={budget.id}
@@ -217,10 +172,9 @@ function HomePage() {
               userInfo={user}
             />
           ))}
-
         </div>
       </div>
-
+      <Footer></Footer>
     </main>
   )
 }

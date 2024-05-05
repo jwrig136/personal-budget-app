@@ -1,6 +1,6 @@
 import Modal from "./Modal"
 import { useState } from 'react'
-import './EditBudget.css'
+import './EditBudget.scss'
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from '../firebase'
 import axios from 'axios';
@@ -34,10 +34,10 @@ function EditBudget({ open, onClose, toEditTitle, toEditBudgetAmount, id, userIn
   }
 
   return (
-    <Modal modalLable='Edit Task' onClose={onClose} open={open}>
-      <form onSubmit={handleUpdate} className='editTask'>
+    <Modal modalLable='Edit Budget' onClose={onClose} open={open}>
+      <form onSubmit={handleUpdate} className='editBudget'>
         <input type='text' name='title' onChange={(e) => setTitle(e.target.value)} value={title} />
-        <textarea onChange={(e) => setBudgetAmount(e.target.value)} value={budgetAmount}></textarea>
+        <input type="number" name='budgetAmount' onChange={(e) => setBudgetAmount(e.target.value)} value={budgetAmount}></input>
         <button type='submit'>Edit</button>
       </form>
     </Modal>

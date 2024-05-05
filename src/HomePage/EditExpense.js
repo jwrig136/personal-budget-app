@@ -1,6 +1,6 @@
 import Modal from "./Modal"
 import { useState } from 'react'
-import './EditBudget.css'
+import './EditExpense.scss'
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from '../firebase'
 import axios from 'axios';
@@ -13,10 +13,15 @@ function EditExpense({ open, onClose, toEditExpenseTitle, toEditExpenseAmount, i
     e.preventDefault()
     const taskDocRef = doc(db, 'expenses', id)
     try {
-      await updateDoc(taskDocRef, {
-        expenseTitle: expenseTitle,
-        expenseAmount: parseInt(expenseAmount)
-      })
+      if (expenseTitle == '' || expenseAmount == '') {
+        alert("Please enter a valid expense item")
+      }
+      else {
+        await updateDoc(taskDocRef, {
+          expenseTitle: expenseTitle,
+          expenseAmount: parseInt(expenseAmount)
+        })
+      }
       refreshToken();
       onClose()
     } catch (err) {
@@ -35,10 +40,10 @@ function EditExpense({ open, onClose, toEditExpenseTitle, toEditExpenseAmount, i
   }
 
   return (
-    <Modal modalLable='Edit Task' onClose={onClose} open={open}>
-      <form onSubmit={handleUpdate} className='editTask'>
+    <Modal modalLable='Edit Expense' onClose={onClose} open={open}>
+      <form onSubmit={handleUpdate} className='editExpense'>
         <input type='text' name='title' onChange={(e) => setExpenseTitle(e.target.value)} value={expenseTitle} />
-        <textarea onChange={(e) => setExpenseAmount(e.target.value)} value={expenseAmount}></textarea>
+        <input type="number" name='expenseAmount' onChange={(e) => setExpenseAmount(e.target.value)} value={expenseAmount}></input>
         <button type='submit'>Edit</button>
       </form>
     </Modal>

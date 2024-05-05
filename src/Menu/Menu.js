@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { signOut } from "firebase/auth";
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import './Menu.scss'
 
 function Menu() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ function Menu() {
       navigate("/login");
 
     }).catch((error) => {
-      alert(error);
+      alert("Please try to log out again");
     });
   }
 

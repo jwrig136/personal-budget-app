@@ -1,7 +1,8 @@
-import '../HomePage/HomePage.css'
+import '../HomePage/HomePage.scss'
 import { useState } from 'react';
 import { collection, query, where, getAggregateFromServer, sum } from 'firebase/firestore'
 import { db } from '../firebase';
+import './BudgetTable.scss';
 
 function BudgetTable({ id, title, budgetAmount }) {
     const [sumOfExpenses, setSumOfExpenses] = useState();
