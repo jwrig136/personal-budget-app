@@ -92,7 +92,11 @@ function HomePage() {
 
       if (ask >= 20 && ask <= 21) {
         const decision = prompt("Would you like to stay logged in? yes/no");
-        if (decision.toLowerCase() == "yes" || decision.toLowerCase() == "y") {
+        console.log(decision);
+        if (decision == null){
+          tokenExpiration(currentTime, expirationTime);
+        }
+        else if (decision.toLowerCase() == "yes" || decision.toLowerCase() == "y") {
           refreshToken();
         }
         checkToken();

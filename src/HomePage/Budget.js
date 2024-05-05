@@ -76,7 +76,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
               onClick={() => setOpen({ ...open, edit: true })}>
               Edit
             </button>
-            <button className='task__deleteButton' onClick={handleDelete}>Delete</button>
+            <button className='budget__deleteButton' onClick={handleDelete}>Delete</button>
           </div>
         </div>
 
@@ -85,7 +85,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
           <form onSubmit={handleSubmit} className='addExpense' name='addExpense'>
             <input
               type='text'
-              name='title'
+              name='expenseTitle'
               onChange={(e) => setExpenseTitle(e.target.value)}
               value={expenseTitle}
               placeholder='Enter Expense Title' />
