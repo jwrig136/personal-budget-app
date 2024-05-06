@@ -14,9 +14,9 @@ function BudgetTable({ id, title, budgetAmount }) {
             sum: sum('expenseAmount')
         });
 
-        setSumOfExpenses(parseFloat(snapshot.data().sum))
+        setSumOfExpenses((parseFloat(snapshot.data().sum)).toFixed(2))
         if (sumOfExpenses != undefined) {
-            setLeftover(parseFloat(budgetAmount) - sumOfExpenses);
+            setLeftover((parseFloat(budgetAmount) - sumOfExpenses).toFixed(2));
         }
 
     }
