@@ -33,7 +33,7 @@ function Expense({ id, expenseTitle, expenseAmount, userInfo }) {
   return (
     <div>
       <div className='expense_body'>
-        <h5>You spent ${expenseAmount} on {expenseTitle}</h5>
+        <h5>You spent ${expenseAmount.toFixed(2)} on {expenseTitle}</h5>
         <div className='expense__buttons'>
           <div className='expense__deleteNedit'>
             <button

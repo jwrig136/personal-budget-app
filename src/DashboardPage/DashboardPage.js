@@ -62,8 +62,6 @@ function DashboardPage() {
           setisData({ ...isData, data: false })
         }
 
-
-
         setBudget(res.data)
       })
     }

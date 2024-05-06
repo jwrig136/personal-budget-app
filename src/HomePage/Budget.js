@@ -14,6 +14,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
   const [expenseTitle, setExpenseTitle] = useState('')
   const [expenseAmount, setExpenseAmount] = useState('')
   const [expenses, setExpense] = useState([]);
+  budgetAmount = budgetAmount.toFixed(2)
 
   useEffect(() => {
     const q = query(collection(db, 'expenses'), where('budgetId', '==', id))
@@ -34,7 +35,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
       else {
         await addDoc(collection(db, 'expenses'), {
           expenseTitle: expenseTitle,
-          expenseAmount: (parseFloat(expenseAmount)).toFixed(2),
+          expenseAmount: parseFloat(expenseAmount),
           budgetId: id
         })
       }

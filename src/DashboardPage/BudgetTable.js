@@ -7,18 +7,18 @@ import './BudgetTable.scss';
 function BudgetTable({ id, title, budgetAmount }) {
     const [sumOfExpenses, setSumOfExpenses] = useState();
     const [leftover, setLeftover] = useState();
+    budgetAmount = budgetAmount.toFixed(2)
 
     async function totalExpenseAmount() {
         const items = query(collection(db, 'expenses'), where('budgetId', '==', id))
         const snapshot = await getAggregateFromServer(items, {
             sum: sum('expenseAmount')
         });
-
-        setSumOfExpenses((parseFloat(snapshot.data().sum)).toFixed(2))
+        
+        setSumOfExpenses((parseFloat(snapshot.data().sum).toFixed(2)))
         if (sumOfExpenses != undefined) {
             setLeftover((parseFloat(budgetAmount) - sumOfExpenses).toFixed(2));
         }
-
     }
 
     totalExpenseAmount();

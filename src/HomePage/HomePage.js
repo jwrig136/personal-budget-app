@@ -63,7 +63,7 @@ function HomePage() {
       else {
         await addDoc(collection(db, 'budget'), {
           title: budgetTitle,
-          budgetAmount: (parseFloat(budgetAmount)).toFixed(2),
+          budgetAmount: parseFloat(budgetAmount),
           userId: user.uid,
           color: setColor()
 
