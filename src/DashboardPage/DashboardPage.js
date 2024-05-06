@@ -146,14 +146,6 @@ function DashboardPage() {
     <main className="center" id="main">
       <Menu></Menu>
       <div className="dashboardPage">
-        <section>
-          <h3>Welcome to Personal Budget</h3>
-          <p>
-            Do you know where you are spending your money? If you really stop to
-            track it down, you would get surprised! Proper budget management depends
-            on real data... and this app will help you with that!
-          </p>
-        </section>
         {!(isData.data) &&
           <div className='noData'>
             <p>Add Data to see Charts!!</p>
@@ -161,20 +153,18 @@ function DashboardPage() {
         {isData.data &&
           <div className="charts">
             <section>
-              <h4>Welcome to Personal Budget</h4>
+              <h3>Budget Table</h3>
               <p>
-                Do you know where you are spending your money? If you really stop to
-                track it down, you would get surprised! Proper budget management depends
-                on real data... and this app will help you with that!
+                The table gives you information on your spending habits. Do not forget to add your expenses!
               </p>
             </section>
             <table className='chartsElement'>
               <tbody>
                 <tr>
                   <th>Budget</th>
-                  <th>Budget Limit</th>
-                  <th>Current Total</th>
-                  <th>Amount Leftover</th>
+                  <th>Limit</th>
+                  <th>Amount Spent</th>
+                  <th>Available Spending</th>
                 </tr>
                 {budget.map((budget) => (
                   <BudgetTable
@@ -189,20 +179,16 @@ function DashboardPage() {
               </tbody>
             </table>
             <section>
-              <h4>Welcome to Personal Budget</h4>
+              <h3>Pie Chart</h3>
               <p>
-                Do you know where you are spending your money? If you really stop to
-                track it down, you would get surprised! Proper budget management depends
-                on real data... and this app will help you with that!
+                The pie chart below represents the percentage of each budget item compared to all your budget items
               </p>
             </section>
             <canvas className='chartsElement' id="myChart" ></canvas>
             <section>
-              <h4>Welcome to Personal Budget</h4>
+              <h3>Bar Chart</h3>
               <p>
-                Do you know where you are spending your money? If you really stop to
-                track it down, you would get surprised! Proper budget management depends
-                on real data... and this app will help you with that!
+                The bar chart below shows the amount that you are spending on each budget item
               </p>
             </section>
             <canvas className='chartsElement' id="myChart2" ></canvas>
