@@ -39,7 +39,7 @@ const Login = () => {
     return (
         <>
             <main>
-                <section className='loginForm'>
+                <section className='loginForm' id="main">
                     <div>
                         <h1>Login</h1>
                         <form>

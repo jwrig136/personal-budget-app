@@ -138,7 +138,8 @@ function HomePage() {
   return (
     <main>
       <Menu></Menu>
-      <section className='homepage'>
+      <div className='homepage'>
+      <section id="main">
         <h3>Welcome to Personal Budget</h3>
         <p className='intro'>
           Do you know where you are spending your money? If you really stop to
@@ -177,6 +178,7 @@ function HomePage() {
               userInfo={user}
             />
           ))}
+        </div>
         </div>
       </div>
       <Footer></Footer>

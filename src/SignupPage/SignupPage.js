@@ -45,7 +45,7 @@ const SignupPage = () => {
 
     return (
         <main >
-            <section className='signupForm'>
+            <section className='signupForm' id="main">
                 <div>
                     <div>
                         <h1>Sign Up</h1>

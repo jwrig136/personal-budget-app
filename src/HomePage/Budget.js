@@ -81,7 +81,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
         </div>
 
         <div className='expenseDisplay'>
-          <h4>Add Expenses</h4>
+          <h4><i><b>Add Expenses</b></i></h4>
           <form onSubmit={handleSubmit} className='addExpense' name='addExpense'>
             <input
               type='text'

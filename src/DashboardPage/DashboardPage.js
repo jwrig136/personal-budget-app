@@ -147,9 +147,9 @@ function DashboardPage() {
   const tokenChecking = setInterval(checkToken, 1000);
 
   return (
-    <main className="center" id="main">
+    <main className="center">
       <Menu></Menu>
-      <div className="dashboardPage">
+      <div className="dashboardPage" id="main">
         {!(isData.data) &&
           <div className='noData'>
             <p>Add Data to see Charts!!</p>

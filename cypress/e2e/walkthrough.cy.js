@@ -3,14 +3,18 @@ const user = require('../fixtures/auth-user.json');
 describe('template spec', () => {
   const { email, password } = user;
   beforeEach(() => {
-    cy.visit('/login')
+    cy.visit('https://personabudgetapp.onrender.com/login')
+
   })
 
   it('Adding Items', () => {
-
+    cy.eyesOpen({
+      appName: 'PersonalBudgetApp',
+    });
     //Login
-    cy.get('input[type=email]').type(email);
-    cy.get('input[type=password]').type(password);
+    cy.eyesCheckWindow('LoginPage');
+    cy.get('input[type=email]').type("testing@gmail.com");
+    cy.get('input[type=password]').type("password123");
     cy.get('button').contains('Login').click();
     cy.getAllLocalStorage('jwt');
     cy.location('pathname').should('equal', '/');
@@ -32,12 +36,15 @@ describe('template spec', () => {
     cy.get('input[name=expenseAmount]').type("69.95");
     cy.get('button').contains('Submit Expense').click();
     cy.contains("You spent $69.95 on Amazon Prime");
+    cy.eyesCheckWindow('HomePage');
     cy.wait(10000);
 
     //Check Dashboard for Visualizations
     cy.contains('Dashboard').click();
     cy.location('pathname').should('equal', '/dashboard');
     cy.wait(10000);
+    cy.eyesCheckWindow('DashboardPage');
+    
 
     //Delete Budget Item
     cy.contains('Home').click();
@@ -48,19 +55,21 @@ describe('template spec', () => {
     cy.wait(10000);
     cy.contains('Dashboard').click();
     cy.location('pathname').should('equal', '/dashboard');
+    cy.wait(1000);
     cy.contains("Add Data");
 
     //Logout
     cy.contains('Logout').click();
     cy.location('pathname').should('equal', '/login');
+    cy.eyesClose();
   })
 
   it('Incorrect Login', () => {
-    cy.get('input[type=email]').type(email);
-    cy.get('input[type=password]').type("wrongpassword");
+    cy.get('input[type=email]').type("testing@gmail.com");
+    cy.get('input[type=password]').type("password123");
     cy.get('button').contains('Login').click();
     cy.contains("The email/password entered is incorrect");
     cy.location('pathname').should('equal', '/login');
   })
-
+  
 })

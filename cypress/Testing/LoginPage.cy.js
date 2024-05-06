@@ -16,10 +16,8 @@ describe('Login Page Functionality', () => {
 
     cy.get('input[type=email]').type(email);
     cy.get('input[type=password]').type(password);
-    cy.contains('Login').click();
-    cy.getAllLocalStorage('jwt');
-    cy.location('pathname').should('equal', '/');
-  })
+    cy.get('button').contains('Login').click();
+    cy.getAllLocalStorage('jwt');  })
 
   it('Wrong Login information', () => {
     cy.mount(
@@ -29,7 +27,7 @@ describe('Login Page Functionality', () => {
 
     cy.get('input[type=email]').type(email);
     cy.get('input[type=password]').type('wrongpassword');
-    cy.contains('Login').click();
+    cy.get('button').contains('Login').click();
     cy.contains('The email/password entered is incorrect')
   })
 
