@@ -92,7 +92,6 @@ function HomePage() {
 
       if (ask >= 20 && ask <= 21) {
         const decision = prompt("Would you like to stay logged in? yes/no");
-        console.log(decision);
         if (decision == null){
           tokenExpiration(currentTime, expirationTime);
         }
@@ -141,10 +140,12 @@ function HomePage() {
       <Menu></Menu>
       <section className='homepage'>
         <h3>Welcome to Personal Budget</h3>
-        <p>
+        <p className='intro'>
           Do you know where you are spending your money? If you really stop to
           track it down, you would get surprised! Proper budget management depends
-          on real data... and this app will help you with that!
+          on real data... and this app will help you with that! Start by adding a budget 
+          item then add expenses to the budget. Go to the dashboard to see charts that will 
+          help you manage your budget.
         </p>
       </section>
 

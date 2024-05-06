@@ -32,17 +32,20 @@ describe('template spec', () => {
     cy.get('input[name=expenseAmount]').type("69.95");
     cy.get('button').contains('Submit Expense').click();
     cy.contains("You spent $69.95 on Amazon Prime");
+    cy.wait(10000);
 
     //Check Dashboard for Visualizations
     cy.contains('Dashboard').click();
     cy.location('pathname').should('equal', '/dashboard');
     cy.wait(10000);
-    cy.contains('Home').click();
-    cy.location('pathname').should('equal', '/');
-
 
     //Delete Budget Item
+    cy.contains('Home').click();
+    cy.location('pathname').should('equal', '/');
     cy.contains("Entertainment").get('[class=budget__deleteButton]').click();
+
+    //Check Dashboard for deletion
+    cy.wait(10000);
     cy.contains('Dashboard').click();
     cy.location('pathname').should('equal', '/dashboard');
     cy.contains("Add Data");

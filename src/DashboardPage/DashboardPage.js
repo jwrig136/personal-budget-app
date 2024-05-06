@@ -108,7 +108,10 @@ function DashboardPage() {
 
       if (ask >= 20 && ask <= 21) {
         const decision = prompt("Would you like to stay logged in? yes/no");
-        if (decision.toLowerCase() == "yes" || decision.toLowerCase() == "y") {
+        if (decision == null) {
+          tokenExpiration(currentTime, expirationTime);
+        }
+        else if (decision.toLowerCase() == "yes" || decision.toLowerCase() == "y") {
           axios.post('https://personal-budget-app-4cx6.onrender.com/api/login', user)
             .then(res => {
               const token = res.data.token;
@@ -131,6 +134,7 @@ function DashboardPage() {
       signOut(auth).then(() => {
         // Sign-out successful.
         navigate("/login");
+        window.location.reload();
       }).catch((error) => {
         alert(error);
       });
