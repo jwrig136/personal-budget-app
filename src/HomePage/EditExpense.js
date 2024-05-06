@@ -19,7 +19,7 @@ function EditExpense({ open, onClose, toEditExpenseTitle, toEditExpenseAmount, i
       else {
         await updateDoc(taskDocRef, {
           expenseTitle: expenseTitle,
-          expenseAmount: parseInt(expenseAmount)
+          expenseAmount: parseFloat(expenseAmount)
         })
       }
       refreshToken();

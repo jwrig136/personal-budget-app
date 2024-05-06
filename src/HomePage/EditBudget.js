@@ -15,7 +15,7 @@ function EditBudget({ open, onClose, toEditTitle, toEditBudgetAmount, id, userIn
     try {
       await updateDoc(taskDocRef, {
         title: title,
-        budgetAmount: parseInt(budgetAmount)
+        budgetAmount: parseFloat(budgetAmount)
       })
       refreshToken();
       onClose()

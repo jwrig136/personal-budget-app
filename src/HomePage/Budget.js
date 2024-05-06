@@ -34,7 +34,7 @@ function Budget({ id, title, budgetAmount, userInfo }) {
       else {
         await addDoc(collection(db, 'expenses'), {
           expenseTitle: expenseTitle,
-          expenseAmount: parseInt(expenseAmount),
+          expenseAmount: parseFloat(expenseAmount),
           budgetId: id
         })
       }

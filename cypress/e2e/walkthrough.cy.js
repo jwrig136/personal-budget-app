@@ -5,32 +5,59 @@ describe('template spec', () => {
   beforeEach(() => {
     cy.visit('/login')
   })
-  it('/passes', () => {
+
+  it('Adding Items', () => {
+
+    //Login
     cy.get('input[type=email]').type(email);
     cy.get('input[type=password]').type(password);
     cy.get('button').contains('Login').click();
     cy.getAllLocalStorage('jwt');
     cy.location('pathname').should('equal', '/');
 
-    
+    //Add Budget Item
     cy.get('input[name=title]').type("Entertainment");
     cy.get('input[name=budgetAmount]').type("150");
     cy.get('button').contains('Submit Budget').click();
 
+    //Add 1st Expense
     cy.get('input[name=expenseTitle]').type("Netflix");
-    cy.get('input[name=expenseAmount]').type("40");
-    cy.get('button').contains('Submit Expense').click();
-    //cy.get('[class=budget__editButton]').click();
-    
-    //cy.get('.modalContainer').should('be.visible')
-    //cy.contains('[class=editBudget]').contains('input[name=title]').clear({force: true});
+    cy.get('input[name=expenseAmount]').type("39.99");
+    cy.get('button').contains('Submit Expense').click();;
+    cy.contains("You spent $39.99 on Netflix");
 
-    //cy.get('[class=budget__editButton]').click();
-    //cy.contains('Entertainment').clear({force: true});
-    cy.get('[class=budget__deleteButton]').click();
-    //cy.get('input[name=expenseAmount]').type("20");
-    //cy.contains('Enter Expense Title').type("Netflix");
-    //cy.get('input[name=expenseAmount]').type("20");
-    //cy.get('button').contains('Submit Expense').click();
-    })
+    //Add 2nd Expense
+    cy.wait(1000);
+    cy.get('input[name=expenseTitle]').type("Amazon Prime");
+    cy.get('input[name=expenseAmount]').type("69.95");
+    cy.get('button').contains('Submit Expense').click();
+    cy.contains("You spent $69.95 on Amazon Prime");
+
+    //Check Dashboard for Visualizations
+    cy.contains('Dashboard').click();
+    cy.location('pathname').should('equal', '/dashboard');
+    cy.wait(10000);
+    cy.contains('Home').click();
+    cy.location('pathname').should('equal', '/');
+
+
+    //Delete Budget Item
+    cy.contains("Entertainment").get('[class=budget__deleteButton]').click();
+    cy.contains('Dashboard').click();
+    cy.location('pathname').should('equal', '/dashboard');
+    cy.contains("Add Data");
+
+    //Logout
+    cy.contains('Logout').click();
+    cy.location('pathname').should('equal', '/login');
+  })
+
+  it('Incorrect Login', () => {
+    cy.get('input[type=email]').type(email);
+    cy.get('input[type=password]').type("wrongpassword");
+    cy.get('button').contains('Login').click();
+    cy.contains("The email/password entered is incorrect");
+    cy.location('pathname').should('equal', '/login');
+  })
+
 })
